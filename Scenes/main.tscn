@@ -17,7 +17,7 @@ size = Vector2(40, 40)
 position = Vector2(592.00006, 443)
 scale = Vector2(0.42, 0.42)
 script = ExtResource("2_kry3j")
-swing_speed = 11.0
+swing_speed = 15.0
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1019283538]
 process_callback = 0
@@ -141,6 +141,10 @@ wobble_frequency = 6.0
 
 [node name="Line2D" type="Line2D" parent="ChainGun" unique_id=667865146]
 width = 5.0
+
+[node name="ChainReelTimer" type="Timer" parent="ChainGun" unique_id=1850678062]
+wait_time = 2.0
+one_shot = true
 
 [node name="StaticBody2D4" type="StaticBody2D" parent="." unique_id=1624183995]
 position = Vector2(1198, 180)

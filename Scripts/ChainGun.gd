@@ -1,6 +1,11 @@
 class_name ChainGun
 extends Node2D
 
+enum ChainGunState { IDLE, GRAPPLING, RETRACTING, REELING }
+
+@onready var chain_reel_timer : Timer = $ChainReelTimer
+@onready var chain_line: Line2D = $Line2D
+
 var player: CharacterBody2D
 var player_pin_joint: PinJoint2D
 
@@ -15,6 +20,7 @@ var chain_distance := 0.0
 var shoot_progress := 0.0
 var grapple_point := Vector2.ZERO
 var rope_length := 0.0
+var reel_remaining_segments := 0
 
 var hit_joint : PinJoint2D
 
@@ -24,10 +30,14 @@ var is_chain_retracted_out = false
 var is_physics_chain = false
 var is_chain_tip_hit = false
 var is_grappling = false
+var is_reeling = false
 @export var shoot_speed = 1000
+@export var reel_speed := 500.0
+@export var min_rope_length := 48.0
 @export var chain_segments = 10
 @export var wobble_amplitude := 20.0
 @export var wobble_frequency := 3.0
+
 var segment_length = 48.0
 var delay: float:
 	get:
@@ -39,8 +49,7 @@ var actual_target_distance: float = 0
 
 var chain_tip_init = preload("res://Scenes/Player/chain_tip.tscn")
 var chain_init = preload("res://Scenes/Player/chain.tscn")
-var chain_curve : Curve2D
-@onready var chain_line: Line2D = $Line2D
+
 const CHAIN_GUN_NAME = "ChainGun"
 
 func initialize(player_ref: CharacterBody2D, pin_joint_ref: PinJoint2D):
@@ -52,10 +61,8 @@ func on_chain_hit(body: Node) -> void:
 		return
 
 	is_chain_tip_hit = true
-	print(shoot_progress)
 	actual_target_distance = shoot_progress * actual_target_distance
 	var new_chain_length = ceilf(actual_target_distance/segment_length)
-	print(new_chain_length)
 	for i in range(chains.size()-1, new_chain_length - 1, -1):
 		if is_instance_valid(chains[i]):
 			chains[i].queue_free()
@@ -69,7 +76,22 @@ func on_chain_hit(body: Node) -> void:
 	is_grappling = true
 	grapple_point = chain_tip.global_position
 	rope_length = player.global_position.distance_to(grapple_point)
-	print("PlayerController detected hit: " + body.name)
+	reel_remaining_segments = ceili(rope_length / 48.0)
+
+func reel_chain(delta):
+	if !chain_reel_timer.is_stopped() or !is_grappling:
+		return
+	print("reeling")
+	is_reeling = true
+	rope_length = maxf(min_rope_length, rope_length - reel_speed * delta)
+	var remaining_segments = ceili(rope_length / 48.0)
+	if is_instance_valid(chains[0]) && remaining_segments >= 1 && reel_remaining_segments != remaining_segments:
+		var front = chains.pop_front()
+		front.queue_free()
+		reel_remaining_segments = remaining_segments
+
+	print(remaining_segments)
+	
 
 func retract_chain():
 	if is_retracting:
@@ -80,6 +102,7 @@ func retract_chain():
 	is_shooting = false
 	is_physics_chain = false
 	is_grappling = false
+	is_reeling = false
 
 	if hit_joint:
 		hit_joint.queue_free()
@@ -134,6 +157,9 @@ func retract_chain():
 	is_chain_retracted_out = false
 
 func shoot_chain():
+	if is_retracting or is_shooting or is_chain_retracted_out:
+		return
+
 	is_chain_tip_hit = false
 	shoot_progress = 0
 	actual_target_distance = target_distance
@@ -164,6 +190,8 @@ func shoot_chain():
 
 	perpendicular = Vector2(-chain_direction.y, chain_direction.x)
 
+	chain_reel_timer.start()
+
 	is_shooting = true
 	is_chain_retracted_out = true
 
@@ -173,7 +201,6 @@ func update_chain(delta):
 
 	chain_start = player.chain_spawn.global_position
 	shoot_progress = move_toward(shoot_progress, 1.0, shoot_speed * delta / actual_target_distance)
-	print(shoot_progress)
 	if shoot_progress >= 1.0:
 		shoot_progress = 1.0
 		activate_chain_physics()
