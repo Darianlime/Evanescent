@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://di3ntmqn3nasm"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_n42b0"]
+radius = 2.0
+height = 48.0
+
+[node name="chain" type="RigidBody2D" unique_id=545525648 groups=["chain"]]
+position = Vector2(0, -24)
+collision_layer = 2
+collision_mask = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=126231900]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -24.0
+offset_right = 2.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1416507182]
+shape = SubResource("CapsuleShape2D_n42b0")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="." unique_id=238884288]
+position = Vector2(0, -24)
+node_a = NodePath("..")

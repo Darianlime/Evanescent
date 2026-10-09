@@ -1,0 +1,165 @@
+[gd_scene format=3 uid="uid://ctg4erw4uy4ab"]
+
+[ext_resource type="PackedScene" uid="uid://cfmqiasllb7tr" path="res://Scenes/Player/player.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" uid="uid://dop0lxdqdwta5" path="res://Scenes/platform.tscn" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="2_kry3j"]
+[ext_resource type="PackedScene" uid="uid://di3ntmqn3nasm" path="res://Scenes/Player/chain.tscn" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="5_kry3j"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_n42b0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(40, 40)
+
+[node name="Main" type="Node2D" unique_id=999813937]
+
+[node name="Player" parent="." unique_id=258159536 instance=ExtResource("1_jjgbg")]
+position = Vector2(592.00006, 443)
+scale = Vector2(0.42, 0.42)
+script = ExtResource("2_kry3j")
+swing_speed = 11.0
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1019283538]
+process_callback = 0
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.1
+drag_right_margin = 0.1
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=686386897]
+position = Vector2(69.01, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1345105912]
+position = Vector2(519.99, 576)
+shape = SubResource("WorldBoundaryShape2D_n42b0")
+
+[node name="StaticBody2D2" parent="." unique_id=1929088670 instance=ExtResource("2_bo1nx")]
+position = Vector2(450, 472)
+
+[node name="StaticBody2D3" parent="." unique_id=608916845 instance=ExtResource("2_bo1nx")]
+position = Vector2(730, 472)
+
+[node name="ChainContainer" type="Node2D" parent="." unique_id=1322104103]
+position = Vector2(740, 180)
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="ChainContainer" unique_id=1930090233]
+collision_layer = 3
+
+[node name="ColorRect" type="ColorRect" parent="ChainContainer/StaticBody2D4" unique_id=1166733942]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainContainer/StaticBody2D4" unique_id=1288661767]
+shape = SubResource("RectangleShape2D_n42b0")
+
+[node name="RigidBody2D" parent="ChainContainer" unique_id=545525648 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 44)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="ChainContainer" unique_id=420314448]
+position = Vector2(0, 20)
+node_a = NodePath("../StaticBody2D4")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D2" parent="ChainContainer" unique_id=453886891 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 92)
+
+[node name="PinJoint2D2" type="PinJoint2D" parent="ChainContainer" unique_id=1573499997]
+position = Vector2(0, 68)
+node_a = NodePath("../RigidBody2D")
+node_b = NodePath("../RigidBody2D2")
+
+[node name="RigidBody2D3" parent="ChainContainer" unique_id=903646974 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 140)
+
+[node name="PinJoint2D3" type="PinJoint2D" parent="ChainContainer" unique_id=1083897929]
+position = Vector2(0, 116)
+node_a = NodePath("../RigidBody2D2")
+node_b = NodePath("../RigidBody2D3")
+
+[node name="RigidBody2D4" parent="ChainContainer" unique_id=780038361 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 188)
+
+[node name="PinJoint2D4" type="PinJoint2D" parent="ChainContainer" unique_id=2140674568]
+position = Vector2(0, 164)
+node_a = NodePath("../RigidBody2D3")
+node_b = NodePath("../RigidBody2D4")
+
+[node name="RigidBody2D5" parent="ChainContainer" unique_id=185504074 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 236)
+
+[node name="PinJoint2D5" type="PinJoint2D" parent="ChainContainer" unique_id=504360553]
+position = Vector2(0, 212)
+node_a = NodePath("../RigidBody2D4")
+node_b = NodePath("../RigidBody2D5")
+
+[node name="ChainContainer2" type="Node2D" parent="." unique_id=577123148]
+position = Vector2(507, 180)
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="ChainContainer2" unique_id=662979676]
+
+[node name="ColorRect" type="ColorRect" parent="ChainContainer2/StaticBody2D4" unique_id=164541931]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainContainer2/StaticBody2D4" unique_id=1117781002]
+shape = SubResource("RectangleShape2D_n42b0")
+
+[node name="RigidBody2D" parent="ChainContainer2" unique_id=401755986 instance=ExtResource("3_8gbba")]
+position = Vector2(0, 44)
+
+[node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="ChainContainer2" unique_id=1558775835]
+position = Vector2(0, 20)
+node_a = NodePath("../StaticBody2D4")
+node_b = NodePath("../RigidBody2D")
+
+[node name="ChainGun" type="Node2D" parent="." unique_id=1315241834]
+script = ExtResource("5_kry3j")
+shoot_speed = 1300
+chain_segments = 8
+wobble_amplitude = 30.0
+wobble_frequency = 6.0
+
+[node name="Line2D" type="Line2D" parent="ChainGun" unique_id=667865146]
+width = 5.0
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="." unique_id=1624183995]
+position = Vector2(1198, 180)
+scale = Vector2(11.545, 1)
+collision_layer = 3
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D4" unique_id=375694734]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4" unique_id=2146817744]
+shape = SubResource("RectangleShape2D_n42b0")

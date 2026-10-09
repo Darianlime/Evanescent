@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://c8w61d45q3n71"]
+
+[ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="1_hmkst"]
+[ext_resource type="PackedScene" uid="uid://di3ntmqn3nasm" path="res://Scenes/Player/chain.tscn" id="1_och0s"]
+
+[node name="ChainGun" type="Node2D" unique_id=1261216979]
+script = ExtResource("1_hmkst")
+
+[node name="chain" parent="." unique_id=545525648 instance=ExtResource("1_och0s")]
+
+[node name="chain2" parent="." unique_id=930595091 instance=ExtResource("1_och0s")]
+position = Vector2(0, -72)
+
+[node name="chain3" parent="." unique_id=1756397341 instance=ExtResource("1_och0s")]
+position = Vector2(0, -120)

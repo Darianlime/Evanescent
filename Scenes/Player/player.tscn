@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cfmqiasllb7tr"]
+
+[ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="2_6t5aa"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(120, 120)
+
+[node name="Player" type="CharacterBody2D" unique_id=258159536]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1579872848]
+texture = ExtResource("2_6t5aa")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1821101351]
+shape = SubResource("RectangleShape2D_n42b0")
+
+[node name="CoyoteTimer" type="Timer" parent="." unique_id=256433791]
+wait_time = 1.5
+one_shot = true
+
+[node name="ChainSpawnMarker" type="Marker2D" parent="." unique_id=174693865]
+
+[node name="PinJoint2D" type="PinJoint2D" parent="." unique_id=1522837435]
+node_a = NodePath("..")

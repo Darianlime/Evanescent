@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bfcb1ehy7ildd"]
+
+[ext_resource type="Texture2D" uid="uid://d0b8jmrtipwak" path="res://Sprites/hook.jpg" id="1_62wx6"]
+[ext_resource type="Script" uid="uid://d1vvcnaspthm7" path="res://Scripts/ChainTipCollision.gd" id="1_ad8wi"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j72mt"]
+size = Vector2(102.85715, 27.983501)
+
+[node name="Hook" type="RigidBody2D" unique_id=1953300925]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_ad8wi")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2118170927]
+position = Vector2(0, -14)
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("1_62wx6")
+flip_h = true
+flip_v = true
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1964352928]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1986089439]
+position = Vector2(-2.3841858e-07, -14.00825)
+scale = Vector2(0.175, 1)
+shape = SubResource("RectangleShape2D_j72mt")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
