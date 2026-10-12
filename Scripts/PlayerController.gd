@@ -3,6 +3,9 @@ extends CharacterBody2D
 @onready var coyote_timer : Timer = $CoyoteTimer
 @onready var chain_spawn : Marker2D = $ChainSpawnMarker
 @onready var pin_joint : PinJoint2D = $PinJoint2D
+@onready var chain_gun: ChainGun = $"../ChainGun"
+@onready var camera: Camera2D = $Camera2D
+@onready var collision: CollisionShape2D = $CollisionShape2D
 
 @export var walk_speed = 300.0
 @export var swing_speed = 300.0
@@ -12,9 +15,7 @@ extends CharacterBody2D
 @export var jump_force = -500.0
 @export_range(0, 1) var decelerate_on_jump_release = 0.5
 
-@onready var chain_gun: ChainGun = $"../ChainGun"
 
-var is_left_click_held := false
 
 func _ready() -> void:
 	chain_gun.initialize(self, pin_joint)
@@ -91,3 +92,9 @@ func apply_grapple_constraint():
 
 		if outward_speed > 0.0:
 			velocity -= outward_direction * outward_speed
+
+func get_rectangle_size() -> Vector2:
+	var rect_shape = collision.shape as RectangleShape2D
+	if rect_shape:
+		return rect_shape.extents * 2.0
+	return Vector2.ZERO

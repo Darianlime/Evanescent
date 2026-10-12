@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://c6hagxyxvggav"]
+
+[ext_resource type="Script" uid="uid://k6w5r0q83k36" path="res://Scripts/Mirror.gd" id="1_2mjjl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(192, 200)
+
+[node name="Mirror" type="Node2D" unique_id=1964462215]
+script = ExtResource("1_2mjjl")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=729458197]
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -200.0
+offset_right = 96.0
+grow_vertical = 2
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1668320896]
+position = Vector2(0, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=761117901]
+position = Vector2(0, -90)
+shape = SubResource("RectangleShape2D_n42b0")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
