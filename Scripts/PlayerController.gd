@@ -3,6 +3,9 @@ extends CharacterBody2D
 @onready var coyote_timer : Timer = $CoyoteTimer
 @onready var chain_spawn : Marker2D = $ChainSpawnMarker
 @onready var pin_joint : PinJoint2D = $PinJoint2D
+@onready var chain_gun: ChainGun = $"../ChainGun"
+@onready var camera: Camera2D = $Camera2D
+@onready var collision: CollisionShape2D = $CollisionShape2D
 
 @export var walk_speed = 300.0
 @export var swing_speed = 300.0
@@ -12,7 +15,7 @@ extends CharacterBody2D
 @export var jump_force = -500.0
 @export_range(0, 1) var decelerate_on_jump_release = 0.5
 
-@onready var chain_gun: ChainGun = $"../ChainGun"
+
 
 func _ready() -> void:
 	chain_gun.initialize(self, pin_joint)
@@ -59,23 +62,17 @@ func _physics_process(delta: float) -> void:
 	if was_on_floor and !is_on_floor() and velocity.y >= 0:
 		coyote_timer.start();
 
+	# shoot chain
 	if Input.is_action_just_pressed("shoot"):
-		if !chain_gun.is_retracting and !chain_gun.is_shooting and !chain_gun.is_chain_retracted_out:
-			chain_gun.shoot_chain()
+		chain_gun.shoot_chain()
+
+	#retract
+	if Input.is_action_just_released("shoot"):
+		chain_gun.retract_chain()
+
+	chain_gun.reel_chain(delta)
 	
-	if Input.is_action_just_released("retract"):
-		if !chain_gun.is_retracting:
-			chain_gun.retract_chain()
 	
-
-	# for collision in get_slide_collision_count():
-	# 	var hit = get_slide_collision(collision)
-	# 	var body = hit.get_collider()
-
-	# 	if body is RigidBody2D:
-	# 		print("Hit a rigid body!")
-	# 		body.apply_central_impulse(-hit.get_normal() * 200)
-
 func apply_grapple_constraint():
 	if !chain_gun.is_grappling:
 		return
@@ -88,7 +85,6 @@ func apply_grapple_constraint():
 
 	if distance > rope_length:
 		var outward_direction := offset.normalized()
-		print(outward_direction)
 
 		global_position = anchor + outward_direction * rope_length
 
@@ -96,3 +92,9 @@ func apply_grapple_constraint():
 
 		if outward_speed > 0.0:
 			velocity -= outward_direction * outward_speed
+
+func get_rectangle_size() -> Vector2:
+	var rect_shape = collision.shape as RectangleShape2D
+	if rect_shape:
+		return rect_shape.extents * 2.0
+	return Vector2.ZERO
