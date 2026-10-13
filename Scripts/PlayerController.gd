@@ -15,7 +15,8 @@ extends CharacterBody2D
 @export var jump_force = -500.0
 @export_range(0, 1) var decelerate_on_jump_release = 0.5
 
-
+var male_player: MaleController 
+var female_player: FemaleController
 
 func _ready() -> void:
 	chain_gun.initialize(self, pin_joint)
