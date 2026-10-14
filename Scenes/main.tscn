@@ -3,12 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://cfmqiasllb7tr" path="res://Scenes/Player/player.tscn" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://dop0lxdqdwta5" path="res://Scenes/platform.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="2_kry3j"]
-[ext_resource type="Shader" uid="uid://bnchsyc0kenda" path="res://Shaders/BackgroundShader.tres" id="3_6bp64"]
 [ext_resource type="PackedScene" uid="uid://di3ntmqn3nasm" path="res://Scenes/Player/chain.tscn" id="3_8gbba"]
 [ext_resource type="Script" uid="uid://dol7ha1f5jg3n" path="res://Scripts/CameraController.gd" id="3_ynf5e"]
 [ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="5_kry3j"]
 [ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="6_21xkr"]
 [ext_resource type="PackedScene" uid="uid://c6hagxyxvggav" path="res://Scenes/mirror.tscn" id="7_344ge"]
+[ext_resource type="Shader" uid="uid://cm5waameyvvd7" path="res://Shaders/Canvas.gdshader" id="10_d1ilt"]
+[ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="10_hptm8"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_n42b0"]
 
@@ -485,8 +486,21 @@ texture = ExtResource("6_21xkr")
 [sub_resource type="TileSet" id="TileSet_n42b0"]
 sources/0 = SubResource("TileSetAtlasSource_6bp64")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_n42b0"]
-shader = ExtResource("3_6bp64")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d1ilt"]
+shader = ExtResource("10_d1ilt")
+shader_parameter/intensity = 1.0
+shader_parameter/pink_color = Color(1, 0.66, 0.94, 1)
+shader_parameter/pink_color_2 = Color(0.901, 0.478, 0.62, 1)
+shader_parameter/blue_color = Color(0, 0.64, 1, 1)
+shader_parameter/progress = 0.0
+shader_parameter/clockwise = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3qx1c"]
+shader = ExtResource("10_d1ilt")
+shader_parameter/intensity = 0.5
+shader_parameter/pink_color = Color(1, 0.66, 0.94, 1)
+shader_parameter/pink_color_2 = Color(0.901, 0.478, 0.62, 1)
+shader_parameter/blue_color = Color(0, 0.64, 1, 1)
 shader_parameter/progress = 0.0
 shader_parameter/clockwise = false
 
@@ -656,17 +670,12 @@ texture_filter = 1
 tile_map_data = PackedByteArray("AAD/////AAAAAAAAAAD//wAAAAAAAAEAAAD//wEAAAAAAAIAAAD//wIAAAAAAAMAAAD//wMAAAAAAAQAAAAAAP//AAABAAAAAAAAAAAAAAABAAEAAAAAAAEAAAABAAIAAAAAAAIAAAABAAMAAAAAAAMAAAABAAQAAAABAP//AAACAAAAAAABAAAAAAACAAEAAAABAAEAAAACAAIAAAABAAIAAAACAAMAAAABAAMAAAACAAQAAAACAP//AAADAAAAAAACAAAAAAADAAEAAAACAAEAAAADAAIAAAACAAIAAAADAAMAAAACAAMAAAADAAQAAAADAP//AAABAAAAAAADAAAAAAABAAEAAAADAAEAAAABAAIAAAADAAIAAAABAAMAAAADAAMAAAABAAQAAAAEAP//AAACAAAAAAAEAAAAAAACAAEAAAAEAAEAAAACAAIAAAAEAAIAAAACAAMAAAAEAAMAAAACAAQAAAAFAP//AAADAAAAAAAFAAAAAAADAAEAAAAFAAEAAAADAAIAAAAFAAIAAAADAAMAAAAFAAMAAAADAAQAAAAGAP//AAABAAAAAAAGAAAAAAABAAEAAAAGAAEAAAABAAIAAAAGAAIAAAABAAMAAAAGAAMAAAABAAQAAAAHAP//AAACAAAAAAAHAAAAAAACAAEAAAAHAAEAAAACAAIAAAAHAAIAAAACAAMAAAAHAAMAAAACAAQAAAAIAP//AAADAAAAAAAIAAAAAAADAAEAAAAIAAEAAAADAAIAAAAIAAIAAAADAAMAAAAIAAMAAAADAAQAAAAJAP//AAABAAAAAAAJAAAAAAABAAEAAAAJAAEAAAABAAIAAAAJAAIAAAABAAMAAAAJAAMAAAABAAQAAAAKAP//AAACAAAAAAAKAAAAAAACAAEAAAAKAAEAAAACAAIAAAAKAAIAAAACAAMAAAAKAAMAAAACAAQAAAALAP//AAADAAAAAAALAAAAAAADAAEAAAALAAEAAAADAAIAAAALAAIAAAADAAMAAAALAAMAAAADAAQAAAAMAP//AAAEAAAAAAAMAAAAAAAEAAEAAAAMAAEAAAAEAAIAAAAMAAIAAAAEAAMAAAAMAAMAAAAEAAQAAAA=")
 tile_set = SubResource("TileSet_n42b0")
 
-[node name="Mirror" parent="." unique_id=1964462215 instance=ExtResource("7_344ge")]
-z_index = -1
-position = Vector2(931, 472)
-
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1142608644]
 unique_name_in_owner = true
-layer = -10
+layer = 5
 
 [node name="ColorRect" type="ColorRect" parent="BackgroundLayer" unique_id=1386638115]
-z_index = -10
-material = SubResource("ShaderMaterial_n42b0")
+material = SubResource("ShaderMaterial_d1ilt")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -675,3 +684,13 @@ offset_bottom = -647.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1152, 648)
+
+[node name="Mirror" parent="." unique_id=1964462215 instance=ExtResource("7_344ge")]
+z_index = -1
+position = Vector2(931.00006, 472)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=442983297]
+material = SubResource("ShaderMaterial_3qx1c")
+position = Vector2(215.00006, 62)
+scale = Vector2(3.4140625, 2.1328125)
+texture = ExtResource("10_hptm8")

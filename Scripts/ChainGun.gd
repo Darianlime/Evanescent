@@ -23,6 +23,7 @@ var rope_length := 0.0
 var reel_remaining_segments := 0
 
 var hit_joint : PinJoint2D
+var grapple_anchor : StaticBody2D
 
 var is_shooting = false
 var is_retracting = false
@@ -68,9 +69,13 @@ func on_chain_hit(body: Node) -> void:
 			chains[i].queue_free()
 		chains.remove_at(i)
 
+	grapple_anchor = StaticBody2D.new()
+	get_tree().current_scene.add_child(grapple_anchor)
+	grapple_anchor.global_position = chain_tip.global_position
+
 	hit_joint = PinJoint2D.new()
 	get_tree().current_scene.add_child(hit_joint)
-	hit_joint.node_a = body.get_path()
+	hit_joint.node_a = grapple_anchor.get_path()
 	hit_joint.node_b = chain_tip.get_path()
 
 	is_grappling = true
@@ -106,6 +111,11 @@ func retract_chain():
 
 	if hit_joint:
 		hit_joint.queue_free()
+		hit_joint = null
+
+	if grapple_anchor:
+		grapple_anchor.queue_free()
+		grapple_anchor = null
 
 	# Disconnect player
 	player_pin_joint.node_b = NodePath()

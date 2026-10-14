@@ -68,3 +68,18 @@ retract={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+
+[shader_globals]
+
+spiral_progress={
+"type": "float",
+"value": 0.0
+}
+is_spiral_clockwise={
+"type": "bool",
+"value": false
+}
+is_spiral_switching_colors={
+"type": "bool",
+"value": false
+}
