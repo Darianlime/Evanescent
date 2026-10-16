@@ -1,5 +1,4 @@
-class_name FemaleController
-extends Node
+class_name FemaleController extends Character
 
 
 # Called when the node enters the scene tree for the first time.

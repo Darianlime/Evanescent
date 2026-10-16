@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Evanescent"
-run/main_scene="res://Scenes/main.tscn"
+run/main_scene="uid://c0p5un8hyg4uj"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://Sprites/icon.svg"
 

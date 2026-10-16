@@ -3,9 +3,6 @@ extends Node2D
 
 enum ChainGunState { IDLE, GRAPPLING, RETRACTING, REELING }
 
-@onready var chain_reel_timer : Timer = $ChainReelTimer
-@onready var chain_line: Line2D = $Line2D
-
 var player: CharacterBody2D
 var player_pin_joint: PinJoint2D
 
@@ -35,9 +32,9 @@ var is_reeling = false
 @export var shoot_speed = 1000
 @export var reel_speed := 500.0
 @export var min_rope_length := 48.0
-@export var chain_segments = 10
+@export var chain_segments = 8
 @export var wobble_amplitude := 20.0
-@export var wobble_frequency := 3.0
+@export var wobble_frequency := 6.0
 
 var segment_length = 48.0
 var delay: float:
@@ -48,8 +45,12 @@ var target_distance: float:
 		return chain_segments * segment_length
 var actual_target_distance: float = 0
 
-var chain_tip_init = preload("res://Scenes/Player/chain_tip.tscn")
-var chain_init = preload("res://Scenes/Player/chain.tscn")
+const chain_tip_init = preload("res://Scenes/Player/chain_tip.tscn")
+const chain_init = preload("res://Scenes/Player/chain.tscn")
+
+var chain_gun : Node2D
+var chain_reel_timer : Timer
+var chain_line: Line2D
 
 const CHAIN_GUN_NAME = "ChainGun"
 
@@ -163,10 +164,17 @@ func retract_chain():
 	chains.clear()
 	chain_line.clear_points()
 
+	chain_reel_timer.queue_free()
+	chain_line.queue_free()
+	queue_free()
+	chain_reel_timer = null
+	chain_line = null
+	chain_gun = null
+
 	is_retracting = false
 	is_chain_retracted_out = false
 
-func shoot_chain():
+func shoot_chain(_player: PlayerController):
 	if is_retracting or is_shooting or is_chain_retracted_out:
 		return
 

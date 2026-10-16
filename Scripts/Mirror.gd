@@ -1,12 +1,19 @@
 extends Node2D
 
 @export var camera_distance_lock := 300.0
-@export var progress_start := 0.0  # world state on the side the player arrives from
-@export var progress_end := 1.0    # world state on the far side
 @export var clockwise := false
 
-@onready var player: CharacterBody2D = %Player
+@onready var player: PlayerController = %Player
 @onready var mirror_collision: CollisionShape2D = $Area2D/CollisionShape2D
+#@onready var player_sprite: Sprite2D = player.get_node("Sprite2D")
+@onready var player_remote: RemoteTransform2D = player.get_node("RemoteTransform2D")
+
+var mirror_clip_min_x := 0.0
+var mirror_clip_max_x := 0.0
+var mirror_clip_max_y := 0.0
+var player_mat : ShaderMaterial
+var progress_start := 0.0  # world state on the side the player arrives from
+var progress_end := 1.0    # world state on the far side
 
 var camera_locked_to_target := false
 var is_player_coming_left := true
@@ -24,6 +31,19 @@ func _ready() -> void:
 	var rect := mirror_collision.shape as RectangleShape2D
 	assert(rect != null, "Mirror collision must be a RectangleShape2D")
 	mirror_size = rect.size
+
+	player_mat = player.current_player_form.get_node("Sprite2D").material as ShaderMaterial
+
+	var mirror_size_half := mirror_size / 2.0
+	mirror_clip_max_x = global_position.x + mirror_size_half.x
+	mirror_clip_min_x = global_position.x - mirror_size_half.x
+	mirror_clip_max_y = global_position.y - mirror_size_half.y
+
+	player_mat.set_shader_parameter("max_x", mirror_clip_max_x)
+
+	if clockwise:
+		progress_start = 1.0
+		progress_end = 0.0
 
 func _process(_delta: float) -> void:
 	var distance_x := absf(player.global_position.x - global_position.x)
@@ -60,6 +80,7 @@ func update_camera_lock(should_lock: bool) -> void:
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body == player:
 		RenderingServer.global_shader_parameter_set("is_spiral_clockwise", clockwise)
+		#player_mat.set_shader_parameter("max_y", mirror_clip_max_y)
 		print(spiral_progress)
 		# if is_player_coming_left:
 		# 	RenderingServer.global_shader_parameter_set("is_spiral_switching_colors", false)
@@ -70,6 +91,7 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	if body == player:
+		#player_mat.set_shader_parameter("max_y", mirror_clip_max_y)
 		is_player_coming_left = player.global_position.x < global_position.x
 		print(is_player_coming_left)
 		# if is_player_coming_left:

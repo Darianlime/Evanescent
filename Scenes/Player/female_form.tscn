@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bklicbdv14wrj"]
+
+[ext_resource type="Shader" uid="uid://cy2w6q6f68foh" path="res://Shaders/player_shader.gdshader" id="1_7r0p3"]
+[ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="2_ntkqa"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7cusq"]
+shader = ExtResource("1_7r0p3")
+shader_parameter/max_x = 1000000.0
+shader_parameter/min_x = -1000000.0
+shader_parameter/max_y = 1000000.0
+
+[node name="FemaleForm" type="Node2D" unique_id=13458798]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1943293117]
+modulate = Color(0.71909887, 0.00025480418, 0.6796345, 1)
+self_modulate = Color(1, 0.45490196, 1, 1)
+material = SubResource("ShaderMaterial_7cusq")
+scale = Vector2(0.375, 0.375)
+texture = ExtResource("2_ntkqa")
