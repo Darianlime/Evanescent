@@ -35,7 +35,7 @@ var is_reeling = false
 @export var shoot_speed = 1000
 @export var reel_speed := 500.0
 @export var min_rope_length := 48.0
-@export var chain_segments = 10
+@export var chain_segments = 15
 @export var wobble_amplitude := 20.0
 @export var wobble_frequency := 3.0
 
