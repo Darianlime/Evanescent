@@ -4,18 +4,20 @@
 [ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="1_tvyv2"]
 [ext_resource type="Script" uid="uid://bsfp3hacdu23b" path="res://Scripts/MaleController.gd" id="1_ydo1h"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_tvyv2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cmgny"]
+resource_local_to_scene = true
 shader = ExtResource("1_6ushv")
 shader_parameter/max_x = 1000000.0
 shader_parameter/min_x = -1000000.0
 shader_parameter/max_y = 1000000.0
 
 [node name="MaleForm" type="Node2D" unique_id=1637466126]
+material = SubResource("ShaderMaterial_cmgny")
 script = ExtResource("1_ydo1h")
 swing_speed = 20.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1981551275]
 z_index = 1
-material = SubResource("ShaderMaterial_tvyv2")
-scale = Vector2(0.375, 0.375)
+use_parent_material = true
+scale = Vector2(0.125, 0.125)
 texture = ExtResource("1_tvyv2")

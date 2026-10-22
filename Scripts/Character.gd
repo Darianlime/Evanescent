@@ -1,10 +1,9 @@
-class_name Character extends Node
+class_name Character extends Node2D
 
 @onready var sprite: Sprite2D = $Sprite2D
 
-@export var walk_speed = 300.0
-@export_range(0, 1) var acceleration = 0.1
-@export_range(0, 1) var deceleration = 0.1
+@export_range(0, 1) var acceleration := 0.1
+@export_range(0, 1) var deceleration := 0.1
 
 func enter(_player: PlayerController) -> void: pass   
 func exit(_player: PlayerController) -> void: pass

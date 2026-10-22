@@ -1,15 +1,13 @@
 [gd_scene format=3 uid="uid://cfmqiasllb7tr"]
 
 [ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="1_xpcdj"]
-[ext_resource type="PackedScene" uid="uid://bsmlo2cjtaa0s" path="res://Scenes/Player/male_form.tscn" id="2_a3d8c"]
 [ext_resource type="Script" uid="uid://dnm6bcu8evfxm" path="res://Scripts/PlayerInput.gd" id="3_xpcdj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
-size = Vector2(48, 48)
+size = Vector2(16, 16)
 
 [node name="Player" type="CharacterBody2D" unique_id=258159536]
 script = ExtResource("1_xpcdj")
-starting_character = ExtResource("2_a3d8c")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1821101351]
 shape = SubResource("RectangleShape2D_n42b0")
