@@ -6,7 +6,10 @@
 script = ExtResource("1_ujaal")
 
 [node name="Line2D" type="Line2D" parent="." unique_id=1776982403]
-width = 5.0
+width = 2.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="ChainReelTimer" type="Timer" parent="." unique_id=1756977325]
 wait_time = 2.0
