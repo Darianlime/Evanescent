@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://bklicbdv14wrj"]
+
+[ext_resource type="Shader" uid="uid://cy2w6q6f68foh" path="res://Shaders/player_shader.gdshader" id="1_7r0p3"]
+[ext_resource type="Script" uid="uid://bhuhm2b7osqpg" path="res://Scripts/FemaleController.gd" id="1_ntkqa"]
+[ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="2_ntkqa"]
+[ext_resource type="Texture2D" uid="uid://byh7143phipw3" path="res://Sprites/umbrella.png" id="4_7cusq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oq4pc"]
+resource_local_to_scene = true
+shader = ExtResource("1_7r0p3")
+shader_parameter/max_x = 1000000.0
+shader_parameter/min_x = -1000000.0
+shader_parameter/max_y = 1000000.0
+
+[node name="FemaleForm" type="Node2D" unique_id=13458798]
+material = SubResource("ShaderMaterial_oq4pc")
+script = ExtResource("1_ntkqa")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1943293117]
+modulate = Color(0.71909887, 0.00025480418, 0.6796345, 1)
+self_modulate = Color(1, 0.45490196, 1, 1)
+z_index = 1
+use_parent_material = true
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("2_ntkqa")
+
+[node name="UmbrellaSprite" type="Sprite2D" parent="." unique_id=1303333884]
+z_index = 1
+texture_filter = 1
+use_parent_material = true
+position = Vector2(1.4305115e-06, 3.800005)
+rotation = 6.2831855
+scale = Vector2(2.4, 2.4)
+texture = ExtResource("4_7cusq")
+offset = Vector2(0, -7.62)
+
+[node name="DashTimer" type="Timer" parent="." unique_id=313311589]
+process_callback = 0
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="DashTimer" to="." method="_on_dash_timer_timeout"]

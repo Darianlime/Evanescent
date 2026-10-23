@@ -3,9 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="1_r7axt"]
 [ext_resource type="Texture2D" uid="uid://c3yjer08nqp1x" path="res://Scenes/Tree-Assets.png" id="2_7rjej"]
 [ext_resource type="PackedScene" uid="uid://cfmqiasllb7tr" path="res://Scenes/Player/player.tscn" id="3_xsl8c"]
-[ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="4_arohb"]
 [ext_resource type="Script" uid="uid://dol7ha1f5jg3n" path="res://Scripts/CameraController.gd" id="5_6s3pv"]
-[ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="6_371ht"]
 [ext_resource type="Shader" uid="uid://cm5waameyvvd7" path="res://Shaders/Canvas.gdshader" id="7_gtk40"]
 [ext_resource type="PackedScene" uid="uid://c6hagxyxvggav" path="res://Scenes/mirror.tscn" id="8_r7axt"]
 
@@ -1415,9 +1413,21 @@ shader_parameter/blue_color = Color(0, 0.64, 1, 1)
 
 [node name="Level" type="Node2D" unique_id=543647881]
 
+[node name="Player" parent="." unique_id=258159536 instance=ExtResource("3_xsl8c")]
+unique_name_in_owner = true
+position = Vector2(-60, -24)
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=692611943]
+zoom = Vector2(2, 2)
+process_callback = 0
+position_smoothing_enabled = true
+drag_left_margin = 0.1
+drag_right_margin = 0.1
+drag_bottom_margin = 0.3
+script = ExtResource("5_6s3pv")
+
 [node name="Node2D" type="Node2D" parent="." unique_id=393557219]
 texture_filter = 1
-scale = Vector2(6, 6)
 
 [node name="TileForeground" type="TileMapLayer" parent="Node2D" unique_id=1974438402]
 material = SubResource("ShaderMaterial_371ht")
@@ -1432,43 +1442,11 @@ tile_map_data = PackedByteArray("AADw/wAAAAARAAEAAADw/wEAAAARAAIAAADx/wAAAAASAAE
 tile_set = SubResource("TileSet_57qmd")
 
 [node name="Mirror" parent="Node2D" unique_id=1964462215 instance=ExtResource("8_r7axt")]
-position = Vector2(512.5, 29.5)
-scale = Vector2(0.16666667, 0.16666667)
-progress_start = 1.0
-progress_end = 0.0
+position = Vector2(512.5, 15)
 clockwise = true
 
 [node name="Mirror2" parent="Node2D" unique_id=769689389 instance=ExtResource("8_r7axt")]
-position = Vector2(212.66666, -1.3333311)
-scale = Vector2(0.167, 0.167)
-
-[node name="Player" parent="." unique_id=258159536 instance=ExtResource("3_xsl8c")]
-unique_name_in_owner = true
-position = Vector2(-270, 32)
-script = ExtResource("4_arohb")
-swing_speed = 15.0
-
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=692611943]
-process_callback = 0
-position_smoothing_enabled = true
-drag_left_margin = 0.1
-drag_right_margin = 0.1
-drag_bottom_margin = 0.3
-script = ExtResource("5_6s3pv")
-
-[node name="ChainGun" type="Node2D" parent="." unique_id=1852340701]
-script = ExtResource("6_371ht")
-shoot_speed = 1300
-chain_segments = 8
-wobble_amplitude = 30.0
-wobble_frequency = 6.0
-
-[node name="Line2D" type="Line2D" parent="ChainGun" unique_id=1173452396]
-width = 5.0
-
-[node name="ChainReelTimer" type="Timer" parent="ChainGun" unique_id=1353815688]
-wait_time = 2.0
-one_shot = true
+position = Vector2(212.66666, -23)
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=2111883494]
 unique_name_in_owner = true

@@ -3,18 +3,19 @@
 [ext_resource type="Script" uid="uid://k6w5r0q83k36" path="res://Scripts/Mirror.gd" id="1_2mjjl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
-size = Vector2(192, 208)
+size = Vector2(64, 80)
 
 [node name="Mirror" type="Node2D" unique_id=1964462215]
+z_index = -1
 script = ExtResource("1_2mjjl")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=729458197]
 anchors_preset = -1
 anchor_bottom = 0.5
-offset_left = -96.0
-offset_top = -104.0
-offset_right = 96.0
-offset_bottom = 104.0
+offset_left = -32.0
+offset_top = -40.0
+offset_right = 32.0
+offset_bottom = 40.0
 grow_vertical = 2
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1668320896]

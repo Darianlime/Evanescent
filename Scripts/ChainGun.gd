@@ -3,9 +3,6 @@ extends Node2D
 
 enum ChainGunState { IDLE, GRAPPLING, RETRACTING, REELING }
 
-@onready var chain_reel_timer : Timer = $ChainReelTimer
-@onready var chain_line: Line2D = $Line2D
-
 var player: CharacterBody2D
 var player_pin_joint: PinJoint2D
 
@@ -32,14 +29,22 @@ var is_physics_chain = false
 var is_chain_tip_hit = false
 var is_grappling = false
 var is_reeling = false
-@export var shoot_speed = 1000
-@export var reel_speed := 500.0
-@export var min_rope_length := 48.0
-@export var chain_segments = 15
+@export var shoot_speed = 500.0
+@export var reel_speed := 300.0
+@export var min_segments := 1       
+@export var chain_segments := 8
+@export_range(0.0, 1.0) var straighten := 0.7
+@export var link_linear_damp := 3.0
+@export var link_angular_damp := 8.0
+@export var link_gravity_scale := 0.6
+var link_spacing := 16.0                
+var min_length: float:                
+	get:
+		return min_segments * link_spacing
 @export var wobble_amplitude := 20.0
-@export var wobble_frequency := 3.0
+@export var wobble_frequency := 6.0
 
-var segment_length = 48.0
+var segment_length = 16.0
 var delay: float:
 	get:
 		return segment_length / shoot_speed
@@ -48,8 +53,12 @@ var target_distance: float:
 		return chain_segments * segment_length
 var actual_target_distance: float = 0
 
-var chain_tip_init = preload("res://Scenes/Player/chain_tip.tscn")
-var chain_init = preload("res://Scenes/Player/chain.tscn")
+const chain_tip_init = preload("res://Scenes/Player/chain_tip.tscn")
+const chain_init = preload("res://Scenes/Player/chain.tscn")
+
+var chain_gun : Node2D
+var chain_reel_timer : Timer
+var chain_line: Line2D
 
 const CHAIN_GUN_NAME = "ChainGun"
 
@@ -60,18 +69,28 @@ func initialize(player_ref: CharacterBody2D, pin_joint_ref: PinJoint2D):
 func on_chain_hit(body: Node) -> void:
 	if is_chain_tip_hit:
 		return
-
 	is_chain_tip_hit = true
-	actual_target_distance = shoot_progress * actual_target_distance
-	var new_chain_length = ceilf(actual_target_distance/segment_length)
-	for i in range(chains.size()-1, new_chain_length - 1, -1):
+
+	var spawn = player.chain_spawn.global_position
+	var tip_pos = chain_tip.global_position
+	var hit_distance = spawn.distance_to(tip_pos)
+
+	# keep enough links to span the distance, never fewer than min_segments
+	var keep := mini(maxi(ceili(hit_distance / segment_length), min_segments), chains.size())
+	for i in range(chains.size() - 1, keep - 1, -1):
 		if is_instance_valid(chains[i]):
 			chains[i].queue_free()
 		chains.remove_at(i)
 
+	link_spacing = hit_distance / maxi(chains.size(), 1)
+
+	shoot_progress = 1.0 
+	for i in chains.size():
+		chains[i].global_position = spawn.lerp(tip_pos, (i + 0.5) / chains.size())
+
 	grapple_anchor = StaticBody2D.new()
 	get_tree().current_scene.add_child(grapple_anchor)
-	grapple_anchor.global_position = chain_tip.global_position
+	grapple_anchor.global_position = tip_pos
 
 	hit_joint = PinJoint2D.new()
 	get_tree().current_scene.add_child(hit_joint)
@@ -79,23 +98,25 @@ func on_chain_hit(body: Node) -> void:
 	hit_joint.node_b = chain_tip.get_path()
 
 	is_grappling = true
-	grapple_point = chain_tip.global_position
+	grapple_point = tip_pos
 	rope_length = player.global_position.distance_to(grapple_point)
-	reel_remaining_segments = ceili(rope_length / 48.0)
+	reel_remaining_segments = chains.size()
 
 func reel_chain(delta):
 	if !chain_reel_timer.is_stopped() or !is_grappling:
 		return
-	print("reeling")
 	is_reeling = true
-	rope_length = maxf(min_rope_length, rope_length - reel_speed * delta)
-	var remaining_segments = ceili(rope_length / 48.0)
-	if is_instance_valid(chains[0]) && remaining_segments >= 1 && reel_remaining_segments != remaining_segments:
-		var front = chains.pop_front()
-		front.queue_free()
-		reel_remaining_segments = remaining_segments
+	rope_length = maxf(min_length, rope_length - reel_speed * delta)
 
-	print(remaining_segments)
+	var wanted := maxi(ceili(rope_length / link_spacing), min_segments)
+	while chains.size() > wanted:
+		var front = chains.pop_front()
+		if is_instance_valid(front):
+			front.queue_free()
+	reel_remaining_segments = wanted
+
+	if not chains.is_empty():
+		player_pin_joint.node_b = chains[0].get_path()
 	
 
 func retract_chain():
@@ -132,18 +153,15 @@ func retract_chain():
 		var first_chain = chains.pop_front()
 		first_chain.queue_free()
 
-		# Move the first remaining chain toward the player
 		if chains.size() > 0:
 			var direction = (player.chain_spawn.global_position - chains[0].global_position).normalized()
 
 			chains[0].global_position = (player.chain_spawn.global_position - direction * segment_length)
 
-		# Each following chain follows the chain before it
 		for i in range(1, chains.size()):
 			var direction = (chains[i - 1].global_position - chains[i].global_position).normalized()
 			chains[i].global_position = (chains[i - 1].global_position - direction * segment_length)
 
-		# Hook follows the last chain
 		if chain_tip and chains.size() > 0:
 			var direction = (chains.back().global_position - chain_tip.global_position).normalized()
 			chain_tip.global_position = (chains.back().global_position - direction * segment_length)
@@ -163,12 +181,25 @@ func retract_chain():
 	chains.clear()
 	chain_line.clear_points()
 
+	chain_reel_timer.queue_free()
+	chain_line.queue_free()
+	queue_free()
+	chain_reel_timer = null
+	chain_line = null
+	chain_gun = null
+
 	is_retracting = false
 	is_chain_retracted_out = false
 
-func shoot_chain():
+func shoot_chain(_player: PlayerController):
 	if is_retracting or is_shooting or is_chain_retracted_out:
 		return
+
+	chain_line.top_level = true                      
+	chain_line.global_transform = Transform2D.IDENTITY
+	chain_line.joint_mode = Line2D.LINE_JOINT_ROUND  
+	chain_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	chain_line.end_cap_mode = Line2D.LINE_CAP_ROUND
 
 	is_chain_tip_hit = false
 	shoot_progress = 0
@@ -258,29 +289,34 @@ func activate_chain_physics():
 	var previous: RigidBody2D = chain_tip
 	chain_tip.lock_rotation = false
 	chain_tip.freeze = false
-	for i in range(chains.size()-1, -1, -1):
+	for i in range(chains.size() - 1, -1, -1):
 		var joint: PinJoint2D = chains[i].get_node("PinJoint2D")
-
 		joint.node_a = previous.get_path()
 		joint.node_b = chains[i].get_path()
 
-		chains[i].freeze = false
-		chains[i].lock_rotation = false
-		# chains[i].visible = true
+		var link := chains[i]
+		link.freeze = false
+		link.lock_rotation = false
+		link.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+		link.angular_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+		link.linear_damp = link_linear_damp
+		link.angular_damp = link_angular_damp
+		link.gravity_scale = link_gravity_scale
 
-		previous = chains[i]
+		previous = link
 
 	player_pin_joint.node_a = player.get_path()
 	player_pin_joint.node_b = previous.get_path()
 
 func update_physics_chain():
+	var a = player.chain_spawn.global_position
+	var b = chain_tip.global_position
 	var points := PackedVector2Array()
-
-	points.append(to_local(player.chain_spawn.global_position))
-
-	for chain in chains:
-		points.append(to_local(chain.global_position))
-
-	points.append(to_local(chain_tip.global_position))
-
+	points.append(a)
+	for i in chains.size():
+		var p := chains[i].global_position
+		if is_grappling: 
+			p = p.lerp(a.lerp(b, (i + 0.5) / chains.size()), straighten)
+		points.append(p)
+	points.append(b)
 	chain_line.points = points

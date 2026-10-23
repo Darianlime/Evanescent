@@ -1,101 +1,148 @@
-extends CharacterBody2D
+class_name PlayerController extends CharacterBody2D
 
 @onready var coyote_timer : Timer = $CoyoteTimer
 @onready var chain_spawn : Marker2D = $ChainSpawnMarker
 @onready var pin_joint : PinJoint2D = $PinJoint2D
-@onready var chain_gun: ChainGun = $"../ChainGun"
 @onready var camera: Camera2D = $Camera2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
+@onready var input: PlayerInput = $PlayerInput
 
-@export var walk_speed = 300.0
-@export var swing_speed = 300.0
-@export_range(0, 1) var acceleration = 0.1
-@export_range(0, 1) var deceleration = 0.1
+@export var walk_speed = 120.0
+@export var jump_height := 32.0
+# @export_range(0, 1) var decelerate_on_jump_release = 0.5
+@export var is_starting_form_male = false
+@export var player_mirror_offset := Vector2(24.0,0.0)
 
-@export var jump_force = -500.0
-@export_range(0, 1) var decelerate_on_jump_release = 0.5
+var male_form = preload("res://Scenes/Player/male_form.tscn")
+var female_form = preload("res://Scenes/Player/female_form.tscn")
+var current_player_form: Character 
+var other_form: Character 
+var player_mat : ShaderMaterial
+var mirror_player_mat : ShaderMaterial
 
-var male_player: MaleController 
-var female_player: FemaleController
+var active_mirror : Mirror
 
 func _ready() -> void:
-	chain_gun.initialize(self, pin_joint)
+	var first = male_form if is_starting_form_male else female_form
+	var second = female_form if is_starting_form_male else male_form
+	current_player_form = first.instantiate()
+	other_form = second.instantiate()
+	add_child(current_player_form)
+	add_child(other_form)
+	other_form.position = player_mirror_offset
+	player_mat = current_player_form.material as ShaderMaterial
+	mirror_player_mat = other_form.material as ShaderMaterial
+	mirror_player_mat.set_shader_parameter("min_x", active_mirror.MAX_CLIP)
+	mirror_player_mat.set_shader_parameter("max_x", active_mirror.MAX_CLIP)
+
+	current_player_form.init(self)
+	other_form.init(self)
+	# chain_gun.initialize(self, pin_joint)
+	pass
 
 func _process(delta: float) -> void:
-	if chain_gun.is_shooting:
-		chain_gun.update_chain(delta) 
-	elif chain_gun.is_physics_chain:
-		chain_gun.update_physics_chain()
+	current_player_form.process_update(self, delta)
 	# elif chain_gun.is_retracting:
 	# 	chain_gun.update_physics_chain()
 
 func _physics_process(delta: float) -> void:
+	update_active_mirror()
+	# if active_mirror && current_player_form.global_position.x - active_mirror.global_position.x > 0 && !active_mirror.is_player_coming_left:
+	# 	other_form.position = -player_mirror_offset
+	# else:
+	# 	other_form.position = player_mirror_offset
+
+
+	# if active_mirror.is_in_range(self):
+	# 	if active_mirror.is_player_coming_left:
+	# 		other_form.position = player_mirror_offset
+	# 	else:
+	# 		other_form.position = -player_mirror_offset
+
+	current_player_form.physics_update(self, input, delta)
+
 	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
+	# if not is_on_floor():
+	# 	velocity += get_gravity() * delta
 
 	# Handle jump.
-	if Input.is_action_just_pressed("jump") and (is_on_floor() or !coyote_timer.is_stopped()):
-		velocity.y = jump_force
-		coyote_timer.stop();
+	# if input.jump_pressed and (is_on_floor() or !coyote_timer.is_stopped()):
+	# 	velocity.y = get_jump_velocity(jump_height, get_gravity().y)
+	# 	coyote_timer.stop();
 
-	if Input.is_action_just_released("jump") and velocity.y < 0:
-		velocity.y *= decelerate_on_jump_release
+	# if input.jump_released and velocity.y < 0:
+	# 	velocity.y *= decelerate_on_jump_release
 
 	var was_on_floor = is_on_floor();
 
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction := Input.get_axis("left", "right")
-	if chain_gun.is_grappling && !is_on_floor():
-		coyote_timer.stop();
-		if direction:
-			velocity.x += direction * swing_speed * acceleration 
-	else:
-		if direction:
-			velocity.x = move_toward(velocity.x, walk_speed * direction, walk_speed * acceleration)
-		else:
-			velocity.x = move_toward(velocity.x, 0, walk_speed * deceleration)
-
 	move_and_slide()
-	apply_grapple_constraint()
 
 	if was_on_floor and !is_on_floor() and velocity.y >= 0:
 		coyote_timer.start();
 
-	# shoot chain
-	if Input.is_action_just_pressed("shoot"):
-		chain_gun.shoot_chain()
+	current_player_form.physics_update_after_move_and_slide(self, input, delta)
 
-	#retract
-	if Input.is_action_just_released("shoot"):
-		chain_gun.retract_chain()
-
-	chain_gun.reel_chain(delta)
-	
-	
-func apply_grapple_constraint():
-	if !chain_gun.is_grappling:
-		return
-
-	var anchor: Vector2 = chain_gun.grapple_point
-	var rope_length: float = chain_gun.rope_length
-
-	var offset := global_position - anchor
-	var distance := offset.length()
-
-	if distance > rope_length:
-		var outward_direction := offset.normalized()
-
-		global_position = anchor + outward_direction * rope_length
-
-		var outward_speed := velocity.dot(outward_direction)
-
-		if outward_speed > 0.0:
-			velocity -= outward_direction * outward_speed
+func get_jump_velocity(height: float, gravity: float) -> float:
+	var g_dt := gravity / Engine.physics_ticks_per_second
+	return -(sqrt(g_dt * g_dt + 8.0 * gravity * height) - g_dt) / 2.0
 
 func get_rectangle_size() -> Vector2:
 	var rect_shape = collision.shape as RectangleShape2D
 	if rect_shape:
 		return rect_shape.extents * 2.0
 	return Vector2.ZERO
+
+func update_active_mirror() -> void:
+	if active_mirror and active_mirror.is_in_range(self):
+		return
+
+	var best: Mirror = null
+	var best_d := INF
+	for m in Mirror.objects:
+		var d := absf(m.global_position.x - global_position.x)
+		if d <= m.camera_distance_lock and d < best_d:
+			best = m
+			best_d = d
+
+	if best == active_mirror:
+		return
+	if active_mirror:
+		other_form_postiion_swap()
+		#active_mirror.release()
+	active_mirror = best
+	if active_mirror:
+		other_form_postiion_swap()
+		update_forms_mirror_clipping();
+		#active_mirror.claim()
+
+func other_form_postiion_swap():
+	if active_mirror.global_position.x > current_player_form.global_position.x:
+		other_form.position = player_mirror_offset
+	else:
+		other_form.position = -player_mirror_offset
+
+func update_forms_mirror_clipping():
+	player_mat = current_player_form.material as ShaderMaterial
+	mirror_player_mat = other_form.material as ShaderMaterial
+	if active_mirror.global_position.x > current_player_form.global_position.x:
+		player_mat.set_shader_parameter("min_x", -active_mirror.MAX_CLIP)
+		player_mat.set_shader_parameter("max_x", active_mirror.mirror_clip_max_x)
+		mirror_player_mat.set_shader_parameter("min_x", active_mirror.mirror_clip_min_x)
+		mirror_player_mat.set_shader_parameter("max_x", active_mirror.MAX_CLIP)
+	else:
+		player_mat.set_shader_parameter("min_x", active_mirror.mirror_clip_min_x)
+		player_mat.set_shader_parameter("max_x", active_mirror.MAX_CLIP)
+		mirror_player_mat.set_shader_parameter("min_x", -active_mirror.MAX_CLIP)
+		mirror_player_mat.set_shader_parameter("max_x", active_mirror.mirror_clip_max_x)
+
+func swap_form():
+	var new_pos = current_player_form.position - other_form.position
+	var current_pos = current_player_form.position
+	var tmp := current_player_form
+	current_player_form = other_form
+	other_form = tmp
+	#move_and_collide(new_pos - global_position)
+	current_player_form.position = current_pos 
+	other_form.position = new_pos 
+	global_position -= new_pos
+	#other_form.position = Vector2.ZERO

@@ -2,9 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://cfmqiasllb7tr" path="res://Scenes/Player/player.tscn" id="1_16oqn"]
 [ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="2_g536y"]
-[ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="2_p4s7r"]
-[ext_resource type="Texture2D" uid="uid://d0sl31fofqp5h" path="res://Scenes/Green-Tree.png" id="3_e2o7s"]
-[ext_resource type="Texture2D" uid="uid://cj3l8sox3qdw8" path="res://Scenes/Background.png" id="4_52m6x"]
 [ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="4_mtuqy"]
 [ext_resource type="Texture2D" uid="uid://c3yjer08nqp1x" path="res://Scenes/Tree-Assets.png" id="4_qc0yy"]
 [ext_resource type="Script" uid="uid://dol7ha1f5jg3n" path="res://Scripts/CameraController.gd" id="5_5qa5p"]
@@ -5600,8 +5597,6 @@ texture = ExtResource("5_l47ew")
 
 [node name="Player2" parent="." unique_id=258159536 instance=ExtResource("1_16oqn")]
 position = Vector2(-270, 32)
-script = ExtResource("2_p4s7r")
-swing_speed = 15.0
 
 [node name="Camera2D" type="Camera2D" parent="Player2" unique_id=692611943]
 offset = Vector2(0, -200)
@@ -5616,9 +5611,7 @@ script = ExtResource("5_5qa5p")
 [node name="ChainGun" type="Node2D" parent="." unique_id=1852340701]
 script = ExtResource("4_mtuqy")
 shoot_speed = 1300
-chain_segments = 10
 wobble_amplitude = 30.0
-wobble_frequency = 6.0
 
 [node name="Line2D" type="Line2D" parent="ChainGun" unique_id=1173452396]
 width = 5.0

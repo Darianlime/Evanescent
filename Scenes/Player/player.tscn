@@ -1,16 +1,13 @@
 [gd_scene format=3 uid="uid://cfmqiasllb7tr"]
 
-[ext_resource type="Texture2D" uid="uid://cvl3huxv8qay2" path="res://Sprites/icon.svg" id="2_6t5aa"]
+[ext_resource type="Script" uid="uid://cxbpknm2xgnqx" path="res://Scripts/PlayerController.gd" id="1_xpcdj"]
+[ext_resource type="Script" uid="uid://dnm6bcu8evfxm" path="res://Scripts/PlayerInput.gd" id="3_xpcdj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
-size = Vector2(48, 48)
+size = Vector2(16, 16)
 
 [node name="Player" type="CharacterBody2D" unique_id=258159536]
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1579872848]
-position = Vector2(9.536743e-07, -9.536743e-07)
-scale = Vector2(0.37499997, 0.37499997)
-texture = ExtResource("2_6t5aa")
+script = ExtResource("1_xpcdj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1821101351]
 shape = SubResource("RectangleShape2D_n42b0")
@@ -23,3 +20,6 @@ one_shot = true
 
 [node name="PinJoint2D" type="PinJoint2D" parent="." unique_id=1522837435]
 node_a = NodePath("..")
+
+[node name="PlayerInput" type="Node2D" parent="." unique_id=893652538]
+script = ExtResource("3_xpcdj")
