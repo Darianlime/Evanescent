@@ -3,8 +3,13 @@ shader_type canvas_item;
 uniform vec3 pink_color : source_color = vec3(1.0,0.66,0.94);
 uniform vec3 pink_color_2 : source_color = vec3(0.901,0.478,0.62);
 uniform vec3 blue_color : source_color = vec3(0.0,0.64,1.0);
+uniform bool start_with_pink = true;
 void fragment() {
-    COLOR = spiral_color(texture(TEXTURE, UV), SCREEN_UV, pink_color_2, blue_color);
+	if (start_with_pink) {
+		COLOR = spiral_color(texture(TEXTURE, UV), SCREEN_UV, pink_color_2, blue_color);
+	} else {
+		COLOR = spiral_color(texture(TEXTURE, UV), SCREEN_UV, blue_color, pink_color_2);
+	}
 }
 
 //void light() {

@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://cfmqiasllb7tr" path="res://Scenes/Player/player.tscn" id="1_16oqn"]
 [ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="2_g536y"]
+[ext_resource type="Texture2D" uid="uid://d0sl31fofqp5h" path="res://Scenes/Green-Tree.png" id="3_e2o7s"]
+[ext_resource type="Texture2D" uid="uid://cj3l8sox3qdw8" path="res://Scenes/Background.png" id="4_52m6x"]
 [ext_resource type="Script" uid="uid://buha2eg7fhtu0" path="res://Scripts/ChainGun.gd" id="4_mtuqy"]
 [ext_resource type="Texture2D" uid="uid://c3yjer08nqp1x" path="res://Scenes/Tree-Assets.png" id="4_qc0yy"]
 [ext_resource type="Script" uid="uid://dol7ha1f5jg3n" path="res://Scripts/CameraController.gd" id="5_5qa5p"]

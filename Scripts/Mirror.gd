@@ -7,6 +7,7 @@ static var objects: Array[Mirror] = []
 
 @onready var player: PlayerController = %Player
 @onready var mirror_collision: CollisionShape2D = $Area2D/CollisionShape2D
+@onready var respawn: Node2D = $RespawnPoint
 #@onready var player_sprite: Sprite2D = player.get_node("Sprite2D")
 
 const MAX_CLIP = 1000000.0

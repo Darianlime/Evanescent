@@ -10,23 +10,28 @@ class_name PlayerController extends CharacterBody2D
 @export var walk_speed = 120.0
 @export var jump_height := 32.0
 # @export_range(0, 1) var decelerate_on_jump_release = 0.5
-@export var is_starting_form_male = false
+@export var is_starting_form_male = true
 @export var player_mirror_offset := Vector2(24.0,0.0)
 
 var male_form = preload("res://Scenes/Player/male_form.tscn")
 var female_form = preload("res://Scenes/Player/female_form.tscn")
 var current_player_form: Character 
 var other_form: Character 
+var starting_form: PackedScene   # the scene the player began as
+var partner_form: PackedScene    # the scene the player began paired with
+var male_form_string : String = "Male"
+var female_form_string : String = "Female"
 var player_mat : ShaderMaterial
 var mirror_player_mat : ShaderMaterial
 
 var active_mirror : Mirror
+var respawn_mirror : Mirror
 
 func _ready() -> void:
-	var first = male_form if is_starting_form_male else female_form
-	var second = female_form if is_starting_form_male else male_form
-	current_player_form = first.instantiate()
-	other_form = second.instantiate()
+	starting_form = male_form if is_starting_form_male else female_form
+	partner_form = female_form if is_starting_form_male else male_form
+	current_player_form = starting_form.instantiate()
+	other_form = partner_form.instantiate()
 	add_child(current_player_form)
 	add_child(other_form)
 	other_form.position = player_mirror_offset
@@ -82,6 +87,21 @@ func _physics_process(delta: float) -> void:
 
 	current_player_form.physics_update_after_move_and_slide(self, input, delta)
 
+	for i in get_slide_collision_count():
+		if get_slide_collision(i).get_collider().is_in_group("hazards"):
+			death()
+			break
+
+func death():
+	global_position = respawn_mirror.respawn.global_position
+	if !respawn_mirror.clockwise:
+		print("clockwise")
+		if current_player_form.get_form_name() == male_form_string:
+			swap_form()
+	else:
+		if current_player_form.get_form_name() == female_form_string:
+			swap_form()
+
 func get_jump_velocity(height: float, gravity: float) -> float:
 	var g_dt := gravity / Engine.physics_ticks_per_second
 	return -(sqrt(g_dt * g_dt + 8.0 * gravity * height) - g_dt) / 2.0
@@ -106,13 +126,17 @@ func update_active_mirror() -> void:
 
 	if best == active_mirror:
 		return
-	if active_mirror:
+	if active_mirror && best != respawn_mirror:
 		other_form_postiion_swap()
 		#active_mirror.release()
 	active_mirror = best
+	if best == respawn_mirror:
+		return
+
 	if active_mirror:
 		other_form_postiion_swap()
 		update_forms_mirror_clipping();
+		respawn_mirror = active_mirror
 		#active_mirror.claim()
 
 func other_form_postiion_swap():

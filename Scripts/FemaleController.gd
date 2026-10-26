@@ -61,4 +61,7 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 		_player.velocity.y = _player.get_jump_velocity(_player.jump_height, _player.get_gravity().y)
 		_player.coyote_timer.stop();
 
+func get_form_name() -> String:
+	return "Female"
+
 	

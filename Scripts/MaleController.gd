@@ -2,12 +2,12 @@ class_name MaleController extends Character
 
 @onready var chain_gun: ChainGun
 @export var swing_speed = 300.0
-@export var max_jump_height = 80
+@export var max_jump_height = 96.0
 @export var charge_time := 0.7
 @export var charge_delay := 0.1   
 const chain_gun_scene = preload("res://Scenes/Player/chain_gun.tscn")
 var is_jump_held := false
-var new_jump_height : float
+var new_jump_height : float = 0.0
 var charge := 0.0
 
 # Called when the node enters the scene tree for the first time.
@@ -96,3 +96,6 @@ func apply_grapple_constraint(_player: PlayerController):
 
 		if outward_speed > 0.0:
 			_player.velocity -= outward_direction * outward_speed
+
+func get_form_name() -> String:
+	return "Male"

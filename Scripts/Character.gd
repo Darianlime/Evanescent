@@ -11,3 +11,4 @@ func init(_player: PlayerController) -> void: pass
 func process_update(_player: PlayerController, _delta: float) -> void: pass
 func physics_update(_player: PlayerController, _input: PlayerInput, _delta: float) -> void: pass
 func physics_update_after_move_and_slide(_player: PlayerController, _input: PlayerInput, _delta: float) -> void: pass
+func get_form_name() -> String: return ""
