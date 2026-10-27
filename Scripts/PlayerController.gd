@@ -8,8 +8,9 @@ class_name PlayerController extends CharacterBody2D
 @onready var input: PlayerInput = $PlayerInput
 
 @export var walk_speed = 120.0
-@export var jump_height := 32.0
+@export var jump_height := 35.0
 # @export_range(0, 1) var decelerate_on_jump_release = 0.5
+@export var camera_offset : Vector2 = Vector2(0.0, -80.0)
 @export var is_starting_form_male = true
 @export var player_mirror_offset := Vector2(24.0,0.0)
 
@@ -98,9 +99,11 @@ func death():
 		print("clockwise")
 		if current_player_form.get_form_name() == male_form_string:
 			swap_form()
+			respawn_mirror.spiral_progress = 1.0
 	else:
 		if current_player_form.get_form_name() == female_form_string:
 			swap_form()
+			respawn_mirror.spiral_progress = 0.0
 
 func get_jump_velocity(height: float, gravity: float) -> float:
 	var g_dt := gravity / Engine.physics_ticks_per_second

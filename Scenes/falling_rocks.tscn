@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://w5hs2qhfwds3"]
+
+[ext_resource type="Texture2D" uid="uid://jbhefjgo81rx" path="res://Sprites/Props-Rocks.png" id="1_b3gwe"]
+[ext_resource type="Script" uid="uid://0tyixyldqtgj" path="res://Scripts/falling_rocks.gd" id="1_lydte"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lydte"]
+radius = 8.0
+height = 22.0
+
+[node name="RigidBody2D" type="RigidBody2D" unique_id=158422498]
+script = ExtResource("1_lydte")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=914508703]
+texture_filter = 1
+rotation = 3.1415925
+texture = ExtResource("1_b3gwe")
+region_enabled = true
+region_rect = Rect2(128, 8, 16, 24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1140604357]
+position = Vector2(0, -1)
+shape = SubResource("CapsuleShape2D_lydte")

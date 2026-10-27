@@ -2,7 +2,8 @@ class_name Mirror extends Node2D
 
 static var objects: Array[Mirror] = []
 
-@export var camera_distance_lock := 100.0
+@export var camera_offset : Vector2 = Vector2(0.0, 0.0)
+@export var camera_distance_lock := 50.0
 @export var clockwise := false
 
 @onready var player: PlayerController = %Player
@@ -53,13 +54,13 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if player.active_mirror != self:
+		if camera_locked_to_target:     
+			update_camera_lock(false)
 		return
-	var distance_x := absf(player.global_position.x - global_position.x)
-	update_camera_lock(distance_x <= camera_distance_lock)
-	if distance_x > camera_distance_lock:
-		return
+		
+	update_camera_lock(true)      
+	update_spiral_center()    
 	var t := clampf(calc_progress(), 0.0, 1.0)
-	#print("progress ", t)
 	spiral_progress = lerpf(progress_start, progress_end, t)
 
 
@@ -87,6 +88,12 @@ func update_camera_lock(should_lock: bool) -> void:
 		player.camera.lock_to_position(global_position)
 	else:
 		player.camera.focus_on(player.current_player_form)
+
+func update_spiral_center() -> void:
+	var vp := get_viewport()
+	var screen_pos := vp.get_canvas_transform() * mirror_collision.global_position
+	var uv := screen_pos / vp.get_visible_rect().size
+	RenderingServer.global_shader_parameter_set("spiral_center", uv)
 
 # func spawn_mirror_character() -> void:
 # 	if current_mirror_character:

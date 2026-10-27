@@ -3,6 +3,7 @@ uniform float intensity : hint_range(0.0, 1.0) = 1.0;
 global uniform float spiral_progress;
 global uniform bool is_spiral_clockwise;
 global uniform bool is_spiral_switching_colors;
+global uniform vec2 spiral_center;
 
 vec4 gray_scale_color(vec3 target_color, vec4 texColor) {
     vec3 weights = vec3(0.2126, 0.7152, 0.0722);
@@ -17,7 +18,7 @@ vec4 gray_scale_color(vec3 target_color, vec4 texColor) {
 }
 
 vec4 spiral_color(vec4 texColor, vec2 screen_uv, vec3 color_a, vec3 color_b) {
-    vec2 p = screen_uv - vec2(0.5);
+    vec2 p = screen_uv - spiral_center;
     float a = atan(p.x, -p.y);
     float t = fract(a / TAU + 0.5);
     if (!is_spiral_clockwise) t = 1.0 - t;

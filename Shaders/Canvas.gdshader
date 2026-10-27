@@ -2,7 +2,10 @@ shader_type canvas_item;
 #include "res://shaders/spiral.gdshaderinc"
 uniform vec3 pink_color : source_color = vec3(1.0,0.66,0.94);
 uniform vec3 pink_color_2 : source_color = vec3(0.901,0.478,0.62);
-uniform vec3 blue_color : source_color = vec3(0.0,0.64,1.0);
+uniform vec3 blue_color : source_color = vec3(0.0,0.57,1.0);
+uniform vec3 blue_color_background : source_color = vec3(0.0,0.35,0.63);
+uniform vec3 blue_color_sky : source_color = vec3(0.0,0.64,1.0);
+uniform vec2 screen_uv_offset = vec2(0.5);
 uniform bool start_with_pink = true;
 void fragment() {
 	if (start_with_pink) {

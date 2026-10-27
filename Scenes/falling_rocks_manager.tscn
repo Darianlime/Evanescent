@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://ch6mqmhm4c5r0"]
+
+[ext_resource type="Script" uid="uid://btcvsiolxe15y" path="res://Scripts/falling_rocks_manager.gd" id="1_3v3yt"]
+[ext_resource type="Texture2D" uid="uid://jbhefjgo81rx" path="res://Sprites/Props-Rocks.png" id="3_bx46u"]
+
+[node name="FallingRockManager" type="Node2D" unique_id=1839885539]
+script = ExtResource("1_3v3yt")
+
+[node name="Timer" type="Timer" parent="." unique_id=1247204831]
+wait_time = 2.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=315770020]
+texture_filter = 1
+rotation = 3.1415925
+texture = ExtResource("3_bx46u")
+region_enabled = true
+region_rect = Rect2(128, 8, 16, 24)
