@@ -9,6 +9,7 @@ static var objects: Array[Mirror] = []
 @onready var player: PlayerController = %Player
 @onready var mirror_collision: CollisionShape2D = $Area2D/CollisionShape2D
 @onready var respawn: Node2D = $RespawnPoint
+@onready var lock_zone: Area2D = $LockZone
 #@onready var player_sprite: Sprite2D = player.get_node("Sprite2D")
 
 const MAX_CLIP = 1000000.0
@@ -20,6 +21,7 @@ var progress_end := 1.0    # world state on the far side
 
 var camera_locked_to_target := false
 var is_player_coming_left := true
+var entered_from_left := true
 var mirror_size := Vector2.ZERO
 
 var spiral_progress := 0.0:
@@ -31,7 +33,7 @@ var spiral_progress := 0.0:
 		RenderingServer.global_shader_parameter_set("spiral_progress", spiral_progress)
 
 func is_in_range(p: Node2D) -> bool:
-	return absf(p.global_position.x - global_position.x) <= camera_distance_lock
+	return lock_zone.overlaps_body(p)
 
 func _ready() -> void:
 	objects.append(self)
@@ -108,6 +110,7 @@ func update_spiral_center() -> void:
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body == player:
+		entered_from_left = player.global_position.x < global_position.x
 		RenderingServer.global_shader_parameter_set("is_spiral_clockwise", clockwise)
 		#player_mat.set_shader_parameter("max_y", mirror_clip_max_y)
 		print(spiral_progress)
@@ -119,13 +122,20 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		# 	spiral_progress = 1.0
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
-	if body == player:
-		#player_mat.set_shader_parameter("max_y", mirror_clip_max_y)
-		is_player_coming_left = player.global_position.x < global_position.x
-		print(is_player_coming_left)
-		player.swap_form()
-		if !is_player_coming_left:
-			pass
+	if body != player:
+		return
+	var x := player.global_position.x
+	var crossed = (entered_from_left and x >= mirror_clip_max_x) or (not entered_from_left and x <= mirror_clip_min_x)
+
+	if x <= mirror_clip_min_x:
+		is_player_coming_left = true  
+	elif x >= mirror_clip_max_x:
+		is_player_coming_left = false
+
+	if not crossed:
+		return                          
+	player.swap_form()
+	player.checkpoint_mirror = self
 		# if is_player_coming_left:
 		# 	RenderingServer.global_shader_parameter_set("is_spiral_switching_colors", false)
 		# 	spiral_progress = 0.0

@@ -2,21 +2,37 @@
 
 [ext_resource type="Texture2D" uid="uid://jbhefjgo81rx" path="res://Sprites/Props-Rocks.png" id="1_b3gwe"]
 [ext_resource type="Script" uid="uid://0tyixyldqtgj" path="res://Scripts/falling_rocks.gd" id="1_lydte"]
+[ext_resource type="Shader" uid="uid://cm5waameyvvd7" path="res://Shaders/Canvas.gdshader" id="2_3h1ok"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8v7by"]
+shader = ExtResource("2_3h1ok")
+shader_parameter/intensity = 1.0
+shader_parameter/pink_color = Color(1, 0.66, 0.94, 1)
+shader_parameter/pink_color_2 = Color(0.901, 0.478, 0.62, 1)
+shader_parameter/blue_color = Color(0, 0.57, 1, 1)
+shader_parameter/blue_color_background = Color(0, 0.35, 0.63, 1)
+shader_parameter/blue_color_sky = Color(0, 0.64, 1, 1)
+shader_parameter/screen_uv_offset = Vector2(0.5, 0.5)
+shader_parameter/start_with_pink = true
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lydte"]
-radius = 8.0
-height = 22.0
+radius = 14.0
+height = 42.0
 
 [node name="RigidBody2D" type="RigidBody2D" unique_id=158422498]
+collision_mask = 0
 script = ExtResource("1_lydte")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=914508703]
 texture_filter = 1
+material = SubResource("ShaderMaterial_8v7by")
+position = Vector2(0, -17)
 rotation = 3.1415925
+scale = Vector2(2, 2)
 texture = ExtResource("1_b3gwe")
 region_enabled = true
 region_rect = Rect2(128, 8, 16, 24)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1140604357]
-position = Vector2(0, -1)
+position = Vector2(0, -17)
 shape = SubResource("CapsuleShape2D_lydte")

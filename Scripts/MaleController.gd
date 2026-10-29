@@ -4,10 +4,14 @@ class_name MaleController extends Character
 @export var swing_speed = 300.0
 @export var max_jump_height = 96.0
 @export var charge_time := 0.7
+@export var release_boost := 140.0 
+@export var release_angle := 30.0 
+@export var release_control_lock := 0.25
 const chain_gun_scene = preload("res://Scenes/Player/chain_gun.tscn")
 var is_jump_held := false
 var new_jump_height : float = 0.0
 var charge := 0.0
+var launch_time_left := 0.0
 
 # Called when the node enters the scene tree for the first time.
 func init(_player: PlayerController) -> void:
@@ -24,6 +28,10 @@ func process_update(_player: PlayerController, _delta: float) -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func physics_update(_player: PlayerController, _input: PlayerInput, _delta: float) -> void:
+	launch_time_left = maxf(launch_time_left - _delta, 0.0)
+	if _player.is_on_floor():
+		launch_time_left = 0.0 
+
 	if not _player.is_on_floor():
 		_player.velocity += _player.get_gravity() * _delta
 
@@ -31,6 +39,8 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 		_player.coyote_timer.stop();
 		if _input.direction:
 			_player.velocity.x += _input.direction * swing_speed * acceleration 
+	elif launch_time_left > 0.0:
+		pass  
 	else:
 		if _input.direction and is_jump_held and charge > 0:
 			_player.velocity.x = move_toward(_player.velocity.x, 50.0 * _input.direction, _player.walk_speed * deceleration)
@@ -68,13 +78,31 @@ func physics_update_after_move_and_slide(_player: PlayerController, _input: Play
 		chain_gun.initialize(_player, _player.pin_joint)
 		chain_gun.shoot_chain(_player)
 
-	#retract
-	if _input.shoot_released:
-		chain_gun.retract_chain()
-
 	if !chain_gun:
 		return
+
+	#retract
+	if _input.jump_pressed:
+		if chain_gun.is_grappling:          # check before retract_chain() clears it
+			launch_from_rope(_player, _input)
+		chain_gun.retract_chain()
+	elif _input.shoot_released:
+		chain_gun.retract_chain()
+
 	chain_gun.reel_chain(_delta)
+
+func launch_from_rope(_player: PlayerController, _input: PlayerInput) -> void:
+	var dir := signf(_player.velocity.x) 
+	if dir == 0.0:
+		dir = signf(_input.direction)
+	if dir == 0.0:
+		return                              
+
+	var old_speed := _player.velocity.length()
+	var a := deg_to_rad(release_angle)
+	_player.velocity += Vector2(cos(a) * dir, -sin(a)) * release_boost
+	#_player.velocity = _player.velocity.limit_length(maxf(release_speed_cap, old_speed))
+	launch_time_left = release_control_lock
 	
 func apply_grapple_constraint(_player: PlayerController):
 	if !chain_gun:

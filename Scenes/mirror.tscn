@@ -5,6 +5,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
 size = Vector2(32, 32)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3qx1c"]
+size = Vector2(96, 48)
+
 [node name="Mirror" type="Node2D" unique_id=1964462215]
 z_index = -1
 script = ExtResource("1_2mjjl")
@@ -24,7 +27,14 @@ grow_vertical = 2
 shape = SubResource("RectangleShape2D_n42b0")
 
 [node name="RespawnPoint" type="Node2D" parent="." unique_id=1480849634]
-position = Vector2(32, 8)
+position = Vector2(25, 8)
+
+[node name="LockZone" type="Area2D" parent="." unique_id=632313563]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LockZone" unique_id=450372301]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_3qx1c")
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

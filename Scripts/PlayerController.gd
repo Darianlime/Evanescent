@@ -13,6 +13,7 @@ class_name PlayerController extends CharacterBody2D
 @export var camera_offset : Vector2 = Vector2(0.0, -80.0)
 @export var is_starting_form_male = true
 @export var player_mirror_offset := Vector2(24.0,0.0)
+@export var start_position := Vector2(-270.0, 15.0)
 
 var male_form = preload("res://Scenes/Player/male_form.tscn")
 var female_form = preload("res://Scenes/Player/female_form.tscn")
@@ -26,7 +27,7 @@ var player_mat : ShaderMaterial
 var mirror_player_mat : ShaderMaterial
 
 var active_mirror : Mirror
-var respawn_mirror : Mirror
+var checkpoint_mirror : Mirror
 
 func _ready() -> void:
 	starting_form = male_form if is_starting_form_male else female_form
@@ -43,46 +44,18 @@ func _ready() -> void:
 
 	current_player_form.init(self)
 	other_form.init(self)
-	# chain_gun.initialize(self, pin_joint)
 	pass
 
 func _process(delta: float) -> void:
 	current_player_form.process_update(self, delta)
-	# elif chain_gun.is_retracting:
-	# 	chain_gun.update_physics_chain()
 
 func _physics_process(delta: float) -> void:
 	update_active_mirror()
-	# if active_mirror && current_player_form.global_position.x - active_mirror.global_position.x > 0 && !active_mirror.is_player_coming_left:
-	# 	other_form.position = -player_mirror_offset
-	# else:
-	# 	other_form.position = player_mirror_offset
-
-
-	# if active_mirror.is_in_range(self):
-	# 	if active_mirror.is_player_coming_left:
-	# 		other_form.position = player_mirror_offset
-	# 	else:
-	# 		other_form.position = -player_mirror_offset
 
 	current_player_form.physics_update(self, input, delta)
 
-	# Add the gravity.
-	# if not is_on_floor():
-	# 	velocity += get_gravity() * delta
-
-	# Handle jump.
-	# if input.jump_pressed and (is_on_floor() or !coyote_timer.is_stopped()):
-	# 	velocity.y = get_jump_velocity(jump_height, get_gravity().y)
-	# 	coyote_timer.stop();
-
-	# if input.jump_released and velocity.y < 0:
-	# 	velocity.y *= decelerate_on_jump_release
-
 	var was_on_floor = is_on_floor();
-
 	move_and_slide()
-
 	if was_on_floor and !is_on_floor() and velocity.y >= 0:
 		coyote_timer.start();
 
@@ -94,16 +67,22 @@ func _physics_process(delta: float) -> void:
 			break
 
 func death():
-	global_position = respawn_mirror.respawn.global_position
-	if !respawn_mirror.clockwise:
-		print("clockwise")
+	await get_tree().physics_frame
+	if checkpoint_mirror == null:       
+		global_position = start_position
+		return
+	global_position = checkpoint_mirror.respawn.global_position
+	if not checkpoint_mirror.clockwise:
 		if current_player_form.get_form_name() == male_form_string:
 			swap_form()
-			respawn_mirror.spiral_progress = 1.0
+			checkpoint_mirror.spiral_progress = 1.0
 	else:
 		if current_player_form.get_form_name() == female_form_string:
 			swap_form()
-			respawn_mirror.spiral_progress = 0.0
+			checkpoint_mirror.spiral_progress = 0.0
+		else:
+			if current_player_form.chain_gun:
+				current_player_form.chain_gun.retract_chain()
 
 func get_jump_velocity(height: float, gravity: float) -> float:
 	var g_dt := gravity / Engine.physics_ticks_per_second
@@ -122,25 +101,22 @@ func update_active_mirror() -> void:
 	var best: Mirror = null
 	var best_d := INF
 	for m in Mirror.objects:
-		var d := absf(m.global_position.x - global_position.x)
-		if d <= m.camera_distance_lock and d < best_d:
+		if not m.is_in_range(self):
+			continue
+		var d := m.global_position.distance_squared_to(global_position)
+		if d < best_d:
 			best = m
 			best_d = d
 
 	if best == active_mirror:
 		return
-	if active_mirror && best != respawn_mirror:
+	if active_mirror:
 		other_form_postiion_swap()
-		#active_mirror.release()
 	active_mirror = best
-	if best == respawn_mirror:
-		return
 
 	if active_mirror:
 		other_form_postiion_swap()
 		update_forms_mirror_clipping();
-		respawn_mirror = active_mirror
-		#active_mirror.claim()
 
 func other_form_postiion_swap():
 	if active_mirror.global_position.x > current_player_form.global_position.x:
