@@ -8,7 +8,7 @@ class_name PlayerController extends CharacterBody2D
 @onready var input: PlayerInput = $PlayerInput
 
 @export var walk_speed = 120.0
-@export var jump_height := 35.0
+@export var jump_height := 40.0
 # @export_range(0, 1) var decelerate_on_jump_release = 0.5
 @export var camera_offset : Vector2 = Vector2(0.0, -80.0)
 @export var is_starting_form_male = true

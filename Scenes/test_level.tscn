@@ -4686,7 +4686,7 @@ polygon = PackedVector2Array(2736, 80, 2768, 80, 2768, 64, 2800, 64, 2800, 48, 2
 
 [node name="Player" parent="." unique_id=258159536 groups=["Player"] instance=ExtResource("6_mwmob")]
 unique_name_in_owner = true
-position = Vector2(-464, -24)
+position = Vector2(480, 1)
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=534993834]
 offset = Vector2(0, -80)
@@ -4758,6 +4758,10 @@ scale = Vector2(1, 1.63)
 [node name="Mirror2" parent="Node2D" unique_id=2254528 instance=ExtResource("8_2yvf5")]
 position = Vector2(1456, -113)
 clockwise = true
+
+[node name="ColorRect" parent="Node2D/Mirror2" index="0" unique_id=729458197]
+offset_left = -14.0
+offset_right = 18.0
 
 [node name="CollisionShape2D" parent="Node2D/Mirror2/Area2D" parent_id_path=PackedInt32Array(2254528, 1668320896) index="0" unique_id=761117901]
 scale = Vector2(1, 14.45)

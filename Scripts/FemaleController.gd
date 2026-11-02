@@ -7,6 +7,7 @@ class_name FemaleController extends Character
 @export var dash_distance := 80.0 	   # px
 @export var dash_time := 0.3 	   # px
 @export var dash_cooldown := 0.6
+@export var cancel_lockout := 0.06
 var cooldown_left := 0.0
 var is_dashing = false
 var dash_direction : float = 0.0
@@ -25,10 +26,18 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 		is_dashing = true
 
 	if is_dashing:
-		var dash_speed = dash_distance / dash_time
-		_player.velocity.x = dash_direction * dash_speed
-		_player.velocity.y = 0
-		return
+		var elapsed = dash_time - timer.time_left
+		var opposite = dash_direction != 0.0 and _input.direction != 0.0 and signf(_input.direction) == -signf(dash_direction)
+
+		if opposite and elapsed >= cancel_lockout:
+			timer.stop()               
+			is_dashing = false
+			cooldown_left = dash_cooldown
+			_player.velocity.x *= 0.25
+		else:
+			_player.velocity.x = dash_direction * (dash_distance / dash_time)
+			_player.velocity.y = 0.0
+			return
 
 	if _input.direction:
 		_player.velocity.x = move_toward(_player.velocity.x, _player.walk_speed * _input.direction, _player.walk_speed * acceleration)

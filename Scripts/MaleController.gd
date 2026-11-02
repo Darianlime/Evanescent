@@ -1,17 +1,29 @@
 class_name MaleController extends Character
 
 @onready var chain_gun: ChainGun
+@onready var timer: Timer = $DashTimer
+
 @export var swing_speed = 300.0
 @export var max_jump_height = 96.0
 @export var charge_time := 0.7
 @export var release_boost := 140.0 
 @export var release_angle := 30.0 
 @export var release_control_lock := 0.25
+@export var dash_distance := 64.0 	  
+@export var dash_time := 0.3 	 
+@export var dash_cooldown := 0.6
+@export var wall_check_distance := 2.0
 const chain_gun_scene = preload("res://Scenes/Player/chain_gun.tscn")
 var is_jump_held := false
 var new_jump_height : float = 0.0
-var charge := 0.0
+var cooldown_left := 0.0
+var is_dashing = false
+var dash_vector = Vector2.ZERO
 var launch_time_left := 0.0
+
+func _on_dash_timer_timeout():
+	is_dashing = false
+	cooldown_left = dash_cooldown
 
 # Called when the node enters the scene tree for the first time.
 func init(_player: PlayerController) -> void:
@@ -29,6 +41,19 @@ func process_update(_player: PlayerController, _delta: float) -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func physics_update(_player: PlayerController, _input: PlayerInput, _delta: float) -> void:
 	launch_time_left = maxf(launch_time_left - _delta, 0.0)
+	cooldown_left = maxf(cooldown_left - _delta, 0.0)
+
+	var side := wall_side(_player)
+	var hugging := side != 0 and signf(_input.direction) == side
+	if _player.input.jump_pressed and hugging and not is_dashing and cooldown_left == 0.0:
+		timer.start(dash_time)
+		is_dashing = true
+		dash_vector = Vector2.UP   
+
+	if is_dashing:
+		_player.velocity = dash_vector * (dash_distance / dash_time)
+		return    
+
 	if _player.is_on_floor():
 		launch_time_left = 0.0 
 
@@ -42,29 +67,15 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 	elif launch_time_left > 0.0:
 		pass  
 	else:
-		if _input.direction and is_jump_held and charge > 0:
-			_player.velocity.x = move_toward(_player.velocity.x, 50.0 * _input.direction, _player.walk_speed * deceleration)
-		elif _input.direction:
+		if _input.direction:
 			_player.velocity.x = move_toward(_player.velocity.x, _player.walk_speed * _input.direction, _player.walk_speed * acceleration)
 		else:
 			_player.velocity.x = move_toward(_player.velocity.x, 0, _player.walk_speed * deceleration)
-	
-	if _player.input.charge_jump_pressed and (_player.is_on_floor() or !_player.coyote_timer.is_stopped()):
-		is_jump_held = true
-		charge = 0.0
-
-	var _t = 0.0
-	if is_jump_held:
-		charge += _delta
-		_t = clampf(charge / charge_time, 0.0, 1.0)
-
-	if _player.input.charge_jump_released:
-		is_jump_held = false
 
 	if _player.input.jump_pressed and (_player.is_on_floor() or !_player.coyote_timer.is_stopped()):
-		var height := lerpf(_player.jump_height, max_jump_height, _t)
-		_player.velocity.y = _player.get_jump_velocity(height, _player.get_gravity().y)
+		_player.velocity.y = _player.get_jump_velocity(_player.jump_height, _player.get_gravity().y)
 		_player.coyote_timer.stop();
+
 
 func physics_update_after_move_and_slide(_player: PlayerController, _input: PlayerInput, _delta: float) -> void:
 	apply_grapple_constraint(_player)
@@ -83,11 +94,14 @@ func physics_update_after_move_and_slide(_player: PlayerController, _input: Play
 
 	#retract
 	if _input.jump_pressed:
-		if chain_gun.is_grappling:          # check before retract_chain() clears it
+		if chain_gun.is_grappling:         
 			launch_from_rope(_player, _input)
 		chain_gun.retract_chain()
 	elif _input.shoot_released:
 		chain_gun.retract_chain()
+
+	if _input.reel_pressed:
+		chain_gun.chain_reel_timer.stop()
 
 	chain_gun.reel_chain(_delta)
 
@@ -125,6 +139,12 @@ func apply_grapple_constraint(_player: PlayerController):
 
 		if outward_speed > 0.0:
 			_player.velocity -= outward_direction * outward_speed
+
+func wall_side(player: PlayerController) -> int:  
+	for dir in [-1, 1]:
+		if player.test_move(player.global_transform, Vector2(dir * wall_check_distance, 0.0)):
+			return dir
+	return 0
 
 func get_form_name() -> String:
 	return "Male"

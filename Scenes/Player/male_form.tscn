@@ -21,3 +21,9 @@ z_index = 1
 use_parent_material = true
 scale = Vector2(0.125, 0.125)
 texture = ExtResource("1_tvyv2")
+
+[node name="DashTimer" type="Timer" parent="." unique_id=65214804]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="DashTimer" to="." method="_on_dash_timer_timeout"]
