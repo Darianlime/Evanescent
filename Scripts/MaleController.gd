@@ -13,6 +13,8 @@ class_name MaleController extends Character
 @export var dash_time := 0.3 	 
 @export var dash_cooldown := 0.6
 @export var wall_check_distance := 2.0
+@export var wall_bounce_speed := 110.0
+@export var wall_bounce_lock := 0.2
 const chain_gun_scene = preload("res://Scenes/Player/chain_gun.tscn")
 var is_jump_held := false
 var new_jump_height : float = 0.0
@@ -45,10 +47,11 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 
 	var side := wall_side(_player)
 	var hugging := side != 0 and signf(_input.direction) == side
-	if _player.input.jump_pressed and hugging and not is_dashing and cooldown_left == 0.0:
+	if _player.input.jump_pressed and hugging and not is_dashing and cooldown_left == 0.0 and not _player.is_on_floor():
 		timer.start(dash_time)
 		is_dashing = true
 		_player.velocity.y = _player.get_jump_velocity(_player.jump_height, _player.get_gravity().y)
+		_player.velocity.x = -side * wall_bounce_speed
 		return  
 
 	if _player.is_on_floor():

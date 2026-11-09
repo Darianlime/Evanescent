@@ -5,40 +5,44 @@ class_name FemaleController extends Character
 @export var glide_fall_speed := 50.0   # px/s, the slowest you'll sink while gliding
 @export var glide_brake := 1000.0      # px/s², how fast you slow down
 @export var dash_distance := 80.0 	   # px
-@export var dash_time := 0.3 	   # px
+@export var dash_distance_up := 32.0   # px
+@export var dash_time := 0.3 	     
 @export var dash_cooldown := 0.6
 @export var cancel_lockout := 0.06
 var cooldown_left := 0.0
 var is_dashing = false
-var dash_direction : float = 0.0
+var dash_direction : Vector2 = Vector2.ZERO
 var umbrella_mat : ShaderMaterial = material as ShaderMaterial
 
 func _on_dash_timer_timeout():
 	is_dashing = false
 	cooldown_left = dash_cooldown
 
-func physics_update(_player: PlayerController, _input: PlayerInput, _delta: float) -> void:
+func dashing(direction : Vector2, _player : PlayerController, _input: PlayerInput, _delta: float):
 	cooldown_left = maxf(cooldown_left - _delta, 0.0)
 
-	if _input.dash_pressed and not is_dashing and cooldown_left == 0.0:
-		dash_direction = signf(_input.direction) if _input.direction != 0.0 else 0.0 
+	if (_input.dash_pressed or _input.shoot_pressed) and not is_dashing and cooldown_left <= 0.0:
+		dash_direction = direction
 		timer.start(dash_time)
 		is_dashing = true
 
 	if is_dashing:
 		var elapsed = dash_time - timer.time_left
-		var opposite = dash_direction != 0.0 and _input.direction != 0.0 and signf(_input.direction) == -signf(dash_direction)
+		var opposite = dash_direction != Vector2.ZERO and signf(_input.direction) == -signf(dash_direction.x)
 
 		if opposite and elapsed >= cancel_lockout:
 			timer.stop()               
 			is_dashing = false
 			cooldown_left = dash_cooldown
-			_player.velocity.x *= 0.25
+			_player.velocity *= 0.25
+		elif dash_direction == Vector2.UP:
+			_player.velocity.y = dash_direction.y * (dash_distance_up / (dash_time*dash_time))
 		else:
-			_player.velocity.x = dash_direction * (dash_distance / dash_time)
+			_player.velocity.x = dash_direction.x * (dash_distance / dash_time)
 			_player.velocity.y = 0.0
 			return
 
+func physics_update(_player: PlayerController, _input: PlayerInput, _delta: float) -> void:
 	if _input.direction:
 		_player.velocity.x = move_toward(_player.velocity.x, _player.walk_speed * _input.direction, _player.walk_speed * acceleration)
 	else:
@@ -54,12 +58,18 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 	elif angle_deg > 45:
 		umbrella_sprite.rotation = deg_to_rad(90)
 		umbrella_sprite.flip_h = false
+		dashing(Vector2.RIGHT, _player, _input, _delta)
 	elif angle_deg < -45:
 		umbrella_sprite.rotation = deg_to_rad(-90)
 		umbrella_sprite.flip_h = true
+		dashing(Vector2.LEFT, _player, _input, _delta)
 	else:
 		umbrella_sprite.rotation = deg_to_rad(0)
 		is_gliding = true
+		dashing(Vector2.UP, _player, _input, _delta)
+		# if not _player.is_on_floor():
+		# 	cooldown_left = 0.0
+		# 	is_dashing = false	
 
 	if not _player.is_on_floor():
 		_player.velocity += _player.get_gravity() * _delta
