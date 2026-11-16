@@ -10,7 +10,9 @@
 [ext_resource type="Script" uid="uid://dol7ha1f5jg3n" path="res://Scripts/CameraController.gd" id="7_so54a"]
 [ext_resource type="PackedScene" uid="uid://c6hagxyxvggav" path="res://Scenes/mirror.tscn" id="8_2yvf5"]
 [ext_resource type="Script" uid="uid://d31igrfs3y3wx" path="res://Scripts/texture_sky.gd" id="10_akkqd"]
+[ext_resource type="PackedScene" uid="uid://cxcp1q4573oe8" path="res://Scenes/key.tscn" id="11_1rqgg"]
 [ext_resource type="PackedScene" uid="uid://ch6mqmhm4c5r0" path="res://Scenes/falling_rocks_manager.tscn" id="11_8v7by"]
+[ext_resource type="PackedScene" uid="uid://chttgsp06smsq" path="res://Scenes/wind.tscn" id="13_mwmob"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mwmob"]
 shader = ExtResource("3_3ihge")
@@ -4686,7 +4688,8 @@ polygon = PackedVector2Array(2736, 80, 2768, 80, 2768, 64, 2800, 64, 2800, 48, 2
 
 [node name="Player" parent="." unique_id=258159536 groups=["Player"] instance=ExtResource("6_mwmob")]
 unique_name_in_owner = true
-position = Vector2(480, 1)
+position = Vector2(305, -468)
+is_starting_form_male = false
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=534993834]
 offset = Vector2(0, -80)
@@ -4792,6 +4795,9 @@ grow_vertical = 2
 texture = ExtResource("5_1rqgg")
 script = ExtResource("10_akkqd")
 metadata/_edit_use_anchors_ = true
+
+[node name="Area2D" parent="Node2D" unique_id=172644443 instance=ExtResource("11_1rqgg")]
+position = Vector2(568, -520)
 
 [node name="FallingRocks" type="Node2D" parent="." unique_id=887996878]
 z_index = -1
@@ -4899,6 +4905,9 @@ position = Vector2(5745, -137)
 
 [node name="FallingRocksCollision" type="LightOccluder2D" parent="." unique_id=1230817476]
 occluder = SubResource("OccluderPolygon2D_3qx1c")
+
+[node name="Area2D" parent="." unique_id=558750757 instance=ExtResource("13_mwmob")]
+position = Vector2(368, -448)
 
 [editable path="Node2D/Mirror5"]
 [editable path="Node2D/Mirror3"]
