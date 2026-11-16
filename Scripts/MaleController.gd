@@ -48,11 +48,8 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 	if _player.input.jump_pressed and hugging and not is_dashing and cooldown_left == 0.0:
 		timer.start(dash_time)
 		is_dashing = true
-		dash_vector = Vector2.UP   
-
-	if is_dashing:
-		_player.velocity = dash_vector * (dash_distance / dash_time)
-		return    
+		_player.velocity.y = _player.get_jump_velocity(_player.jump_height, _player.get_gravity().y)
+		return  
 
 	if _player.is_on_floor():
 		launch_time_left = 0.0 
