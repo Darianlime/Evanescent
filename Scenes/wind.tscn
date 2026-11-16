@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://chttgsp06smsq"]
+
+[ext_resource type="Script" uid="uid://dip56iw5lbiyh" path="res://Scripts/wind.gd" id="1_4dp6s"]
+[ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="1_gc4i6"]
+[ext_resource type="Shader" uid="uid://cumhkgjm2ydwe" path="res://Shaders/wind.gdshader" id="3_4dp6s"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n42b0"]
+atlas = ExtResource("1_gc4i6")
+region = Rect2(320, 352, 32, 32)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rp0cl"]
+shader = ExtResource("3_4dp6s")
+shader_parameter/height = 103.455
+shader_parameter/base_radius = 14.0
+shader_parameter/top_radius = 20.965
+shader_parameter/radius_curve = 1.0
+shader_parameter/spin_speed = 3.0
+shader_parameter/squash = 0.25
+shader_parameter/sway = 2.465
+shader_parameter/only_side = 0.0
+shader_parameter/color_back = Color(0.5, 0.55, 0.65, 0.5)
+shader_parameter/color_front = Color(0.95, 0.97, 1, 1)
+shader_parameter/size_back = 0.6
+shader_parameter/size_front = 1.125
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_43i0t"]
+size = Vector2(32, 87)
+
+[node name="Area2D" type="Area2D" unique_id=558750757]
+script = ExtResource("1_4dp6s")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=90512811]
+texture_filter = 1
+position = Vector2(0, -16)
+texture = SubResource("AtlasTexture_n42b0")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=359947522]
+amount = 100
+lifetime = 1.5
+local_coords = true
+trail_sections = 4
+process_material = SubResource("ShaderMaterial_rp0cl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1628656132]
+position = Vector2(0, -43.5)
+shape = SubResource("RectangleShape2D_43i0t")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

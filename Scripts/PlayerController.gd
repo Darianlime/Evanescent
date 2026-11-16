@@ -29,6 +29,8 @@ var mirror_player_mat : ShaderMaterial
 var active_mirror : Mirror
 var checkpoint_mirror : Mirror
 
+var key_count : int = 0
+
 func _ready() -> void:
 	starting_form = male_form if is_starting_form_male else female_form
 	partner_form = female_form if is_starting_form_male else male_form
