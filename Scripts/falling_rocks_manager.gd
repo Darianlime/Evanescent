@@ -64,5 +64,3 @@ func _on_timer_timeout():
 func falling_rock():
 	var falling_rock_init = falling_rock_scene.instantiate()
 	add_child(falling_rock_init)
-
-
