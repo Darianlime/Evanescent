@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bnyir30c28u8u"]
+
+[ext_resource type="Script" uid="uid://ck0gkku6p5ibn" path="res://Scripts/lily_pad.gd" id="1_1lohk"]
+[ext_resource type="Texture2D" uid="uid://dh32k0qjl05ha" path="res://Sprites/Tiles.png" id="1_xtmy1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n42b0"]
+atlas = ExtResource("1_xtmy1")
+region = Rect2(272, 312, 32, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xtmy1"]
+size = Vector2(28, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(28, 19)
+
+[node name="LilyPad" type="AnimatableBody2D" unique_id=1046930841]
+script = ExtResource("1_1lohk")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=959694742]
+texture_filter = 1
+position = Vector2(0, -20)
+texture = SubResource("AtlasTexture_n42b0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=81858241]
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_xtmy1")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1523262827]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1486358750]
+position = Vector2(0, -42.5)
+shape = SubResource("RectangleShape2D_n42b0")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://benld5lvbqpru"]
+
+[ext_resource type="Texture2D" uid="uid://na2n6n8mlc70" path="res://Sprites/diary_journal_small__dusty_old_aged.png" id="1_kf45j"]
+
+[node name="JournalLayer" type="CanvasLayer" unique_id=2007584182]
+layer = 10
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1590365493]
+texture_filter = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.255
+offset_top = -229.285
+offset_right = 236.255
+offset_bottom = -29.28479
+grow_vertical = 0
+scale = Vector2(0.34, 0.34)
+pivot_offset = Vector2(0, 200)
+texture_normal = ExtResource("1_kf45j")

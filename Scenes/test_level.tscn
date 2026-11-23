@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://cxcp1q4573oe8" path="res://Scenes/key.tscn" id="11_1rqgg"]
 [ext_resource type="PackedScene" uid="uid://ch6mqmhm4c5r0" path="res://Scenes/falling_rocks_manager.tscn" id="11_8v7by"]
 [ext_resource type="PackedScene" uid="uid://chttgsp06smsq" path="res://Scenes/wind.tscn" id="13_mwmob"]
+[ext_resource type="PackedScene" uid="uid://bnyir30c28u8u" path="res://Scenes/lily_pad.tscn" id="14_so54a"]
+[ext_resource type="PackedScene" uid="uid://c7jbtk1ed722f" path="res://Scenes/seed_pod.tscn" id="15_sw8nc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mwmob"]
 shader = ExtResource("3_3ihge")
@@ -4688,7 +4690,7 @@ polygon = PackedVector2Array(2736, 80, 2768, 80, 2768, 64, 2800, 64, 2800, 48, 2
 
 [node name="Player" parent="." unique_id=258159536 groups=["Player"] instance=ExtResource("6_mwmob")]
 unique_name_in_owner = true
-position = Vector2(305, -468)
+position = Vector2(130, -11)
 is_starting_form_male = false
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=534993834]
@@ -4908,6 +4910,18 @@ occluder = SubResource("OccluderPolygon2D_3qx1c")
 
 [node name="Area2D" parent="." unique_id=558750757 instance=ExtResource("13_mwmob")]
 position = Vector2(368, -448)
+
+[node name="LilyPad" parent="." unique_id=1046930841 instance=ExtResource("14_so54a")]
+position = Vector2(793, 6)
+
+[node name="Area2D2" parent="." unique_id=560169637 instance=ExtResource("13_mwmob")]
+position = Vector2(240, 81)
+
+[node name="RigidBody2D" parent="." unique_id=1715257458 instance=ExtResource("15_sw8nc")]
+position = Vector2(249, 71)
+
+[node name="RigidBody2D2" parent="." unique_id=34545748 instance=ExtResource("15_sw8nc")]
+position = Vector2(230, 71)
 
 [editable path="Node2D/Mirror5"]
 [editable path="Node2D/Mirror3"]
