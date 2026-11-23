@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://c7jbtk1ed722f"]
+
+[ext_resource type="Script" uid="uid://bojt8by2fdowd" path="res://Scripts/seed_pod.gd" id="1_i88qr"]
+[ext_resource type="Texture2D" uid="uid://c3yjer08nqp1x" path="res://Scenes/Tree-Assets.png" id="1_q2k6x"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n42b0"]
+atlas = ExtResource("1_q2k6x")
+region = Rect2(128, 48, 16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(14, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3qx1c"]
+size = Vector2(16, 16)
+
+[node name="SeedPod" type="RigidBody2D" unique_id=1715257458 groups=["seed_pod"]]
+lock_rotation = true
+script = ExtResource("1_i88qr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=626090728]
+texture_filter = 1
+texture = SubResource("AtlasTexture_n42b0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847620946]
+shape = SubResource("RectangleShape2D_n42b0")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1325052013]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=44810565]
+shape = SubResource("RectangleShape2D_3qx1c")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

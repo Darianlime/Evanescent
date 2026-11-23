@@ -2,6 +2,7 @@ class_name FemaleController extends Character
 
 @onready var umbrella_sprite : Sprite2D = $UmbrellaSprite
 @onready var timer: Timer = $DashTimer
+@export var pogo_distance := 300.0
 @export var glide_fall_speed := 50.0   # px/s, the slowest you'll sink while gliding
 @export var glide_brake := 1000.0      # px/s², how fast you slow down
 @export var dash_distance := 80.0 	   # px
@@ -13,6 +14,7 @@ var cooldown_left := 0.0
 var is_dashing = false
 var dash_direction : Vector2 = Vector2.ZERO
 var umbrella_mat : ShaderMaterial = material as ShaderMaterial
+var pod_hit := false
 
 func _on_dash_timer_timeout():
 	is_dashing = false
@@ -34,10 +36,11 @@ func dashing(direction : Vector2, _player : PlayerController, _input: PlayerInpu
 			timer.stop()               
 			is_dashing = false
 			cooldown_left = dash_cooldown
-			_player.velocity *= 0.25
+			_player.velocity.x *= 0.25
 		elif dash_direction == Vector2.UP:
-			_player.velocity.y = dash_direction.y * (dash_distance_up / (dash_time*dash_time))
-		else:
+			_player.velocity.y = -pogo_distance
+			_player.velocity.x = 0
+		else: 
 			_player.velocity.x = dash_direction.x * (dash_distance / dash_time)
 			_player.velocity.y = 0.0
 			return
@@ -55,21 +58,27 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 	var angle_deg = wrapf(rad_to_deg(angle), -180.0, 180.0)
 	if !_player.is_on_floor() && (angle_deg < -135 || angle_deg > 135):
 		umbrella_sprite.rotation = deg_to_rad(180)
+		_player.is_floating = false
+		if pod_hit:
+			_player.velocity.y = -pogo_distance
 	elif angle_deg > 45:
 		umbrella_sprite.rotation = deg_to_rad(90)
 		umbrella_sprite.flip_h = false
+		_player.is_floating = false
 		dashing(Vector2.RIGHT, _player, _input, _delta)
 	elif angle_deg < -45:
 		umbrella_sprite.rotation = deg_to_rad(-90)
 		umbrella_sprite.flip_h = true
+		_player.is_floating = false
 		dashing(Vector2.LEFT, _player, _input, _delta)
 	else:
 		umbrella_sprite.rotation = deg_to_rad(0)
 		is_gliding = true
+		_player.is_floating = true
 		dashing(Vector2.UP, _player, _input, _delta)
-		# if not _player.is_on_floor():
-		# 	cooldown_left = 0.0
-		# 	is_dashing = false	
+		if not _player.is_on_floor():
+			cooldown_left = 0.0
+			is_dashing = false	
 
 	if not _player.is_on_floor():
 		_player.velocity += _player.get_gravity() * _delta
@@ -83,4 +92,10 @@ func physics_update(_player: PlayerController, _input: PlayerInput, _delta: floa
 func get_form_name() -> String:
 	return "Female"
 
-	
+func _on_umbrella_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group("seed_pod"):
+		pod_hit = true
+
+
+func _on_umbrella_area_2d_body_exited(body: Node2D) -> void:
+	pod_hit = false

@@ -12,6 +12,9 @@ shader_parameter/max_x = 1000000.0
 shader_parameter/min_x = -1000000.0
 shader_parameter/max_y = 1000000.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n42b0"]
+size = Vector2(29, 13)
+
 [node name="FemaleForm" type="Node2D" unique_id=13458798]
 material = SubResource("ShaderMaterial_oq4pc")
 script = ExtResource("1_ntkqa")
@@ -34,9 +37,19 @@ scale = Vector2(2.4, 2.4)
 texture = ExtResource("4_7cusq")
 offset = Vector2(0, -7.62)
 
+[node name="UmbrellaArea2D" type="Area2D" parent="UmbrellaSprite" unique_id=447440440]
+position = Vector2(-8.728856e-07, -1.5833354)
+scale = Vector2(0.41666666, 0.41666666)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UmbrellaSprite/UmbrellaArea2D" unique_id=59942745]
+position = Vector2(2.5, -16.5)
+shape = SubResource("RectangleShape2D_n42b0")
+
 [node name="DashTimer" type="Timer" parent="." unique_id=313311589]
 process_callback = 0
 wait_time = 0.5
 one_shot = true
 
+[connection signal="body_entered" from="UmbrellaSprite/UmbrellaArea2D" to="." method="_on_umbrella_area_2d_body_entered"]
+[connection signal="body_exited" from="UmbrellaSprite/UmbrellaArea2D" to="." method="_on_umbrella_area_2d_body_exited"]
 [connection signal="timeout" from="DashTimer" to="." method="_on_dash_timer_timeout"]

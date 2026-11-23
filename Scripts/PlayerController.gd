@@ -31,6 +31,8 @@ var checkpoint_mirror : Mirror
 
 var key_count : int = 0
 
+var is_floating := false
+
 func _ready() -> void:
 	starting_form = male_form if is_starting_form_male else female_form
 	partner_form = female_form if is_starting_form_male else male_form
@@ -49,6 +51,8 @@ func _ready() -> void:
 	pass
 
 func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("swap_form"):
+		swap_form()
 	current_player_form.process_update(self, delta)
 
 func _physics_process(delta: float) -> void:
